@@ -79,6 +79,23 @@ extension User {
     }
 }
 
+// MARK: - Empty Object 패턴 생성자
+extension User {
+    static func empty(loginPlatform: LoginPlatform) -> User {
+        return User(
+            uid: "stub-uid",
+            registerDate: Date(),                 // 현재 시간
+            loginPlatform: loginPlatform,
+            nickname: "stub-nickname",                     // 아직 입력 안 됨
+            profileImageURL: nil,
+            birthdayDate: Date.distantPast,       // 의미 없는 과거 값
+            gender: .other,                       // 기본값 (비공개)
+            isPushEnabled: true,                  // 기본값
+            groupId: nil
+        )
+    }
+}
+
 // MARK: ---------------------------------------------------------------------------
 struct HCGroup: Encodable {
     let groupId: String

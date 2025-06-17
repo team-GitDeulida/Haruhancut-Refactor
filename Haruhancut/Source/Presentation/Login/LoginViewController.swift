@@ -11,12 +11,12 @@ final class LoginViewController: UIViewController {
     
     private let disposeBag = DisposeBag()
     weak var coordinator: LoginFlowCoordinator?
-    private let viewModel: LoginViewModelType
+    private let loginViewModel: LoginViewModelType
     private let customView = LoginView()
     
     // MARK: - Initializer
-    init(viewModel: LoginViewModelType) {
-        self.viewModel = viewModel
+    init(loginViewModel: LoginViewModelType) {
+        self.loginViewModel = loginViewModel
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -36,14 +36,35 @@ final class LoginViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-    }   
+        self.bindViewModel()
+    }
 
     // MARK: - Bindings
     private func bindViewModel() {
-
+        let input = LoginViewModel.LoginInput(
+            kakaoLoginTapped: customView.kakaoLoginButton.rx.tap.asObservable(),
+            appleLoginTapped: customView.appleLoginButton.rx.tap.asObservable())
+        
+        let output = loginViewModel.transform(input: input)
+        output.loginResult
+            .drive { result in
+                switch result {
+                case .success:
+                    print("기존 회원 - 홈으로 화면전환")
+                    self.coordinator?.showHome()
+                case .failure(let error):
+                    switch error {
+                    case .noUser:
+                        print("신규 회원 - 닉네임창으로 화면전환")
+                        self.coordinator?.showNicknameSetting()
+                    default:
+                        print("bindViewModelOutput - 로그인 실패")
+                    }
+                }
+            }.disposed(by: disposeBag)
     }
 }
 
 #Preview {
-    LoginViewController(viewModel: StubLoginViewModel())
+    LoginViewController(loginViewModel: StubLoginViewModel())
 }

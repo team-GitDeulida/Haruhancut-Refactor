@@ -18,7 +18,7 @@ protocol GroupRepositoryProtocol {
     func joinGroup(inviteCode: String) -> RxSwift.Observable<Result<HCGroup, GroupError>>
 }
 
-final class GroupRepositoryProtocolImpl: GroupRepositoryProtocol {
+final class GroupRepository: GroupRepositoryProtocol {
 
     private let firebaseAuthManager: FirebaseAuthManagerProtocol
     

@@ -34,18 +34,17 @@ extension UIFont {
         hcFont(.bold, size: 24)
     }
     static var titleFont: UIFont {
-        hcFont(.bold, size: 24)
+        hcFont(.bold, size: 20)
     }
 
     static var bodyFont: UIFont {
-        hcFont(.regular, size: 16)
+        hcFont(.regular, size: 15)
     }
 
     static var captionFont: UIFont {
         hcFont(.medium, size: 12)
     }
 }
-
 
 // ----------------------------------------------------------------- //
 // SwiftUI 대응
@@ -54,11 +53,11 @@ import SwiftUI
 
 extension Font {
     static var hcTitle: Font {
-        Font.custom("Pretendard-Bold", size: 24)
+        Font.custom("Pretendard-Bold", size: 20)
     }
 
     static var hcBody: Font {
-        Font.custom("Pretendard-Regular", size: 16)
+        Font.custom("Pretendard-Regular", size: 15)
     }
 
     static var hcCaption: Font {
@@ -76,7 +75,7 @@ final class FontView: UIView {
         label.textColor = .label
         label.textAlignment = .center
         label.numberOfLines = 0
-        label.text = "title size 24"
+        label.text = "title size 20"
         return label
     }()
     
@@ -86,7 +85,7 @@ final class FontView: UIView {
         label.textColor = .secondaryLabel
         label.textAlignment = .center
         label.numberOfLines = 0
-        label.text = "body size 16"
+        label.text = "body size 15"
         return label
     }()
     

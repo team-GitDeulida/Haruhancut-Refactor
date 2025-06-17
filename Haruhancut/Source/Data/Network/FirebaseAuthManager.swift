@@ -97,9 +97,12 @@ extension FirebaseAuthManager {
                     observer.onError(NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "값이 존재하지 않음"]))
                     return
                 }
-                // print("🔥 observeValue snapshot.value = \(value)")
                 
                 do {
+                    guard JSONSerialization.isValidJSONObject(value) else {
+                        throw NSError(domain: "", code: -2, userInfo: [NSLocalizedDescriptionKey: "유효하지 않은 JSON 객체"])
+                    }
+                    
                     let data = try JSONSerialization.data(withJSONObject: value, options: [])
                     let decoded = try JSONDecoder().decode(T.self, from: data)
                     observer.onNext(decoded)
@@ -111,6 +114,7 @@ extension FirebaseAuthManager {
             return Disposables.create()
         }
     }
+
     
     /// Firebase Realtime Database의 해당 경로에 있는 데이터를 일부 필드만 병합 업데이트합니다.
     /// - 기존 데이터는 유지하면서, 전달한 값의 필드만 갱신됩니다.
@@ -235,7 +239,7 @@ extension FirebaseAuthManager {
                     return dto.toModel()
                 }
                 .catch { error in
-                    print("❌ 유저 정보 디코딩 실패: \(error.localizedDescription)")
+                    print("❌ 유저 정보 디코딩 실패 - nil반환: \(error.localizedDescription)")
                     return Observable.just(nil)
                 }
     }

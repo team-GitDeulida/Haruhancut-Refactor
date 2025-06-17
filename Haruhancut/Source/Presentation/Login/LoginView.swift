@@ -15,10 +15,10 @@ final class LoginView: UIView {
         return lottie
     }()
     
-    private lazy var kakaoLoginButton = SocialLoginButton(type: .kakao,
+    lazy var kakaoLoginButton = SocialLoginButton(type: .kakao,
                                                           title: "카카오로 계속하기")
     
-    private lazy var appleLoginButton = SocialLoginButton(type: .apple,
+    lazy var appleLoginButton = SocialLoginButton(type: .apple,
                                                           title: "Apple로 계속하기")
     
     private lazy var stackView: UIStackView = {
@@ -55,7 +55,7 @@ final class LoginView: UIView {
     private func setupUI() {
         backgroundColor = .background
         [animationView, stackView, titleLabel].forEach {
-            addSubview($0)
+            self.addSubview($0)
             $0.translatesAutoresizingMaskIntoConstraints = false
         }
     }
@@ -87,5 +87,6 @@ final class LoginView: UIView {
 }
 
 #Preview {
-    LoginViewController(viewModel: StubLoginViewModel())
+    LoginViewController(loginViewModel: StubLoginViewModel())
 }
+

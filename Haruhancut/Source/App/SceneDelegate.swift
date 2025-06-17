@@ -7,10 +7,13 @@
 
 import UIKit
 import ScaleKit
+import FirebaseAuth
+import KakaoSDKAuth
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
+    var appCoordinator: AppCoordinator?
 
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
@@ -26,16 +29,33 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         // 2. window scene을 가져오는 windowScene을 생성자를 사용해서 UIWindow를 생성
         let window = UIWindow(windowScene: windowScene)
+        let navigationController = UINavigationController()
         
         // 3. view 계층을 프로그래밍 방식으로 만들기
-        let rootVC = ViewController()
+        // let rootVC = NicknameSettingViewController(loginViewModel: StubLoginViewModel())
         
-        // 4. viewController로 window의 root view controller를 설정
-        window.rootViewController = rootVC
+        // 로그인 여부 확인
+        let isLoggedIn = Auth.auth().currentUser != nil && UserDefaultsManager.shared.loadUser() != nil
+        let coordinator = AppCoordinator(navigationController: navigationController, isLoggedIn: isLoggedIn)
+        self.appCoordinator = coordinator
+        coordinator.start()
+        
+        // 4. viewController로 navigationController로 설정
+        window.rootViewController = navigationController
         
         // 5. window를 설정하고 makeKeyAndVisible()
         self.window = window
         window.makeKeyAndVisible()
+    }
+    
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        
+        // 카카오 로그인
+        if let url = URLContexts.first?.url {
+            if (AuthApi.isKakaoTalkLoginUrl(url)) {
+                _ = AuthController.rx.handleOpenUrl(url: url)
+            }
+        }
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
