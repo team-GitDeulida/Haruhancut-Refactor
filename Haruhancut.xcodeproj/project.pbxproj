@@ -21,6 +21,7 @@
 		DF16ED102E014937008B4FE7 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = DF16ED0F2E014937008B4FE7 /* Kingfisher */; };
 		DF16ED132E01494A008B4FE7 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = DF16ED122E01494A008B4FE7 /* Lottie */; };
 		DF16ED162E014958008B4FE7 /* ScaleKit in Frameworks */ = {isa = PBXBuildFile; productRef = DF16ED152E014958008B4FE7 /* ScaleKit */; };
+		DF16ED4F2E015714008B4FE7 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = DF16ED4E2E015714008B4FE7 /* FirebaseDatabase */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -53,6 +54,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DF16ED4F2E015714008B4FE7 /* FirebaseDatabase in Frameworks */,
 				DF16ED132E01494A008B4FE7 /* Lottie in Frameworks */,
 				DF16ED102E014937008B4FE7 /* Kingfisher in Frameworks */,
 				DF16ED162E014958008B4FE7 /* ScaleKit in Frameworks */,
@@ -73,10 +75,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		DF16ED4D2E015714008B4FE7 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		DFE52B512E008C6400F87C87 = {
 			isa = PBXGroup;
 			children = (
 				DFE52B5C2E008C6400F87C87 /* Haruhancut */,
+				DF16ED4D2E015714008B4FE7 /* Frameworks */,
 				DFE52B5B2E008C6400F87C87 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -123,6 +133,7 @@
 				DF16ED0F2E014937008B4FE7 /* Kingfisher */,
 				DF16ED122E01494A008B4FE7 /* Lottie */,
 				DF16ED152E014958008B4FE7 /* ScaleKit */,
+				DF16ED4E2E015714008B4FE7 /* FirebaseDatabase */,
 			);
 			productName = Haruhancut;
 			productReference = DFE52B5A2E008C6400F87C87 /* Haruhancut.app */;
@@ -522,6 +533,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = DF16ED142E014958008B4FE7 /* XCRemoteSwiftPackageReference "ScaleKit" */;
 			productName = ScaleKit;
+		};
+		DF16ED4E2E015714008B4FE7 /* FirebaseDatabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DF16ECF52E0148F7008B4FE7 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDatabase;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

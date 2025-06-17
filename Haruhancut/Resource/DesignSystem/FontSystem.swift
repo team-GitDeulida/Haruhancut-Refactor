@@ -30,6 +30,9 @@ extension UIFont {
 
 // 하루한컷 프리셋 폰트
 extension UIFont {
+    static var logoFont: UIFont {
+        hcFont(.bold, size: 24)
+    }
     static var titleFont: UIFont {
         hcFont(.bold, size: 24)
     }
