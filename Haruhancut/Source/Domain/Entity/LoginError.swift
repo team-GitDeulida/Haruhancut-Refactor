@@ -7,6 +7,11 @@
 
 import Foundation
 
+enum GroupError: Error {
+    case makeHostError
+    case fetchGroupError
+}
+
 enum LoginError: Error {
     
     // MARK: - kakao
@@ -22,6 +27,7 @@ enum LoginError: Error {
     case signUpError
     case noUser
     case logoutError
+    case updateUserError
     
     var description: String {
         switch self {
@@ -41,6 +47,8 @@ enum LoginError: Error {
             "⚠️ 유저가 존재하지 않음"
         case .logoutError:
             "⚠️ 로그아웃 실패"
+        case .updateUserError:
+            "⚠️ 유저 업데이트 실패"
         }
     }
 }
