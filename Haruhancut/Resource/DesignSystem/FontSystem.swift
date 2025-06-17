@@ -23,7 +23,7 @@ extension UIFont {
 
 // 커스텀 폰트
 extension UIFont {
-    static func hcFont(font: HCFont, size: CGFloat) -> UIFont {
+    static func hcFont(_ font: HCFont, size: CGFloat) -> UIFont {
         return UIFont(name: font.rawValue, size: size) ?? UIFont.systemFont(ofSize: size)
     }
 }
@@ -31,15 +31,15 @@ extension UIFont {
 // 하루한컷 프리셋 폰트
 extension UIFont {
     static var titleFont: UIFont {
-        hcFont(font: .bold, size: 24)
+        hcFont(.bold, size: 24)
     }
 
     static var bodyFont: UIFont {
-        hcFont(font: .regular, size: 16)
+        hcFont(.regular, size: 16)
     }
 
     static var captionFont: UIFont {
-        hcFont(font: .medium, size: 12)
+        hcFont(.medium, size: 12)
     }
 }
 
