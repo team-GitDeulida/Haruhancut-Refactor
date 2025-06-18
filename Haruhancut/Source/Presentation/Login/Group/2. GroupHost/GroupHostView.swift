@@ -11,7 +11,6 @@ final class GroupHostView: UIView {
     // MARK: - Dynamic
     private var btnDynamincConstraint: NSLayoutConstraint?
     
-    
     // MARK: - UI Component
     private lazy var mainLabel: HCLabel = {
         let label = HCLabel(type: .main(text: "그룹 이름을 입력해 주세요"))

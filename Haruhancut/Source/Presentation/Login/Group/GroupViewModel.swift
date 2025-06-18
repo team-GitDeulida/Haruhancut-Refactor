@@ -10,6 +10,7 @@ import RxCocoa
 
 protocol GroupViewModelType {
     func transform(input: GroupViewModel.GroupHostInput) -> GroupViewModel.GroupHostOutput
+    func transform(input: GroupViewModel.GroupEnterInput) -> GroupViewModel.GroupEnterOutput
 }
 
 final class GroupViewModel: GroupViewModelType {
@@ -28,6 +29,7 @@ final class GroupViewModel: GroupViewModelType {
     }
 }
 
+// MARK: - GroupHost
 extension GroupViewModel {
     struct GroupHostInput {
         let groupNameText: Observable<String>
@@ -100,9 +102,63 @@ extension GroupViewModel {
     }
 }
 
+// MARK: - GroupEnter
+extension GroupViewModel {
+    struct GroupEnterInput {
+        let inviteCodeText: Observable<String>
+        let endBtnTapped: Observable<Void>
+    }
+    
+    struct GroupEnterOutput {
+        let enterResult: Driver<Result<Void, GroupError>>
+        let inInviteCodeValid: Driver<Bool>
+    }
+    
+    func transform(input: GroupEnterInput) -> GroupEnterOutput {
+        let result = input.endBtnTapped
+            .withLatestFrom(input.inviteCodeText)
+            .flatMapLatest { [weak self] inviteCode -> Observable<Result<Void, GroupError>> in
+                guard let self = self else {
+                    return .just(.failure(.fetchGroupError))
+                }
+                
+                return self.groupUsecase.joinGroup(inviteCode: inviteCode)
+                    .map { joinResult in
+                        switch joinResult {
+                        case .success(let group):
+                            if var user = self.loginViewModel.user.value {
+                                user.groupId = group.groupId
+                                self.loginViewModel.user.accept(user)
+                                UserDefaultsManager.shared.saveUser(user)
+                            }
+                            self.homeViewModel.group.accept(group)
+                            UserDefaultsManager.shared.saveGroup(group)
+                            return .success(())
+                        case .failure(let error):
+                            return .failure(error)
+                        }
+                    }
+            }
+            .asDriver(onErrorJustReturn: .failure(.fetchGroupError))
+        
+        let isInviteCodeValid = input.inviteCodeText
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false }
+            .distinctUntilChanged()
+            .asDriver(onErrorJustReturn: false)
+        
+        return GroupEnterOutput(enterResult: result, inInviteCodeValid: isInviteCodeValid)
+    }
+}
+
 final class StubGroupViewModel: GroupViewModelType {
+    
     func transform(input: GroupViewModel.GroupHostInput) -> GroupViewModel.GroupHostOutput {
         return .init(hostResult: Driver.just(.success("stub-group-Id")),
                      isGroupNameValid: Driver.just(true))
+    }
+    
+    func transform(input: GroupViewModel.GroupEnterInput) -> GroupViewModel.GroupEnterOutput {
+        return .init(enterResult: Driver.just(.success(())),
+                     inInviteCodeValid: Driver.just(true))
     }
 }

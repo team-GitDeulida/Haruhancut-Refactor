@@ -102,7 +102,7 @@ extension LoginViewModel {
             
         // MARK: - 애플 로그인
         let appleResult = input.appleLoginTapped
-            // 1. 카카오 토큰 발급
+            // 1. 애플 토큰 발급
             .flatMapLatest { [weak self] _ -> Observable<Result<(String, String), LoginError>> in
                 guard let self = self else { return .empty() }
                 return self.loginUseCase.loginWithApple()
@@ -132,7 +132,7 @@ extension LoginViewModel {
                                 return .success(())
                             } else {
                                 /// 신규 회원
-                                self.user.accept(User.empty(loginPlatform: .kakao))
+                                self.user.accept(User.empty(loginPlatform: .apple))
                                 if let user = user {
                                     UserDefaultsManager.shared.saveUser(user)
                                 }

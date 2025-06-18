@@ -211,7 +211,6 @@ final class HomeCoordinator: Coordinator {
     }
     
     func startGroupHost() {
-        print("startGroupHost")
         guard let groupVM = groupViewModel else { return }
         let vc = GroupHostViewController(groupViewModel: groupVM)
         vc.coordinator = self
@@ -219,6 +218,9 @@ final class HomeCoordinator: Coordinator {
     }
     
     func startGroupEnter() {
-        print("startGroupEnter")
+        guard let groupVM = groupViewModel else { return }
+        let vc = GroupEnterViewController(groupViewModel: groupVM)
+        vc.coordinator = self
+        navigationController.pushViewController(vc, animated: true)
     }
 }
