@@ -8,8 +8,10 @@ import UIKit
 
 final class NicknameSettingView: UIView {
     
+    // MARK: - Dynamic
+    private var nextButtonBottonConstraint: NSLayoutConstraint?
+    
     // MARK: - UI Component
-    private var nextButtonBottomConstraint: NSLayoutConstraint?
     private lazy var mainLabel: UILabel = HCLabel(type: .main(text: "사용하실 닉네임을 입력해주세요."))
     private lazy var subLabel: UILabel = HCLabel(type: .sub(text: "닉네임은 언제든지 변경할 수 있어요!"))
     lazy var textField: UITextField = HCTextField(placeholder: "닉네임")
@@ -34,7 +36,7 @@ final class NicknameSettingView: UIView {
         setupUI()
         setupConstraints()
         
-        if let constraint = nextButtonBottomConstraint {
+        if let constraint = nextButtonBottonConstraint {
             self.bindKeyboard(to: constraint)
         }
     }
@@ -65,7 +67,7 @@ final class NicknameSettingView: UIView {
     // MARK: - Constraints
     private func setupConstraints() {
         
-        nextButtonBottomConstraint = nextButton.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -10)
+        nextButtonBottonConstraint = nextButton.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -10)
         
         
         NSLayoutConstraint.activate([
@@ -83,7 +85,7 @@ final class NicknameSettingView: UIView {
             nextButton.centerXAnchor.constraint(equalTo: safeAreaLayoutGuide.centerXAnchor),
             nextButton.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 20),// 좌우 패딩
             nextButton.heightAnchor.constraint(equalToConstant: 50), // 버튼 높이
-                    nextButtonBottomConstraint!
+                    nextButtonBottonConstraint!
         ])
     }
 }

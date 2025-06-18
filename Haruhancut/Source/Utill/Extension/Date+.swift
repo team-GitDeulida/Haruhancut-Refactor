@@ -35,4 +35,14 @@ extension Date {
         formatter.timeZone = TimeZone(identifier: "Asia/Seoul")
         return formatter.string(from: self)
     }
+    
+    
+    /// 상대적인 시간
+    /// - Returns: "5분 전", "2시간 전", "3일 전"
+    func toRelativeString() -> String {
+        let relativeFormatter = RelativeDateTimeFormatter()
+        relativeFormatter.locale = Locale(identifier: "ko_KR")
+        relativeFormatter.unitsStyle = .short // → "5분 전", "2시간 전", "3일 전"
+        return relativeFormatter.localizedString(for: self, relativeTo: Date())
+    }
 }

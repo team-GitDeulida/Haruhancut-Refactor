@@ -16,6 +16,8 @@ final class HCLabel: UILabel {
         case commentAuther(text: String)     // 댓글 작성자
         case commentContent(text: String)    // 댓글 본문
         case custom(text: String, font: UIFont, color: UIColor)   // 커스텀 크기
+        case feedNickname(text: String)      // 피드 닉네임
+        case feedTime(text: String)           // 피드 시간
     }
     
     init(type: LabelType) {
@@ -51,6 +53,14 @@ final class HCLabel: UILabel {
         case .custom(let text, let customFont, let customColor):
             textColor = customColor
             font = customFont
+            self.text = text
+        case .feedNickname(let text):
+            textColor = .mainWhite
+            font = .hcFont(.extraBold, size: 14)
+            self.text = text
+        case .feedTime(let text):
+            textColor = .Gray300
+            font = .hcFont(.extraBold, size: 14)
             self.text = text
         }
     }

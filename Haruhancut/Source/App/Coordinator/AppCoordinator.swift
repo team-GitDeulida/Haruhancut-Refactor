@@ -171,6 +171,7 @@ final class HomeCoordinator: Coordinator {
     let navigationController: UINavigationController
     private let loginViewModel: LoginViewModel
     private let homeViewModel:  HomeViewModel
+    private var groupViewModel: GroupViewModel?
     
     init(navigationController: UINavigationController,
          loginViewModel: LoginViewModel,
@@ -188,15 +189,36 @@ final class HomeCoordinator: Coordinator {
              startHome()
         } else {
             /// 그룹 생성
-            // startGroup()
-            print("그룹 생성")
-            startHome()
+            startGroup()
         }
     }
     
     func startHome() {
-        let homeVC = HomeViewController(viewModel: HomeViewModel())
+        let homeVC = HomeViewController(homeViewModel: homeViewModel)
         homeVC.coordinator = self
         navigationController.setViewControllers([homeVC], animated: true)
+    }
+    
+    func startGroup() {
+        groupViewModel = GroupViewModel(
+            loginViewModel: loginViewModel,
+            homeViewModel: homeViewModel,
+            groupUsecase: DIContainer.shared.resolve(GroupUsecase.self))
+        guard let groupVM = groupViewModel else { return }
+        let vc = GroupViewController(groupViewModel: groupVM)
+        vc.coordinator = self
+        navigationController.setViewControllers([vc], animated: true)
+    }
+    
+    func startGroupHost() {
+        print("startGroupHost")
+        guard let groupVM = groupViewModel else { return }
+        let vc = GroupHostViewController(groupViewModel: groupVM)
+        vc.coordinator = self
+        navigationController.pushViewController(vc, animated: true)
+    }
+    
+    func startGroupEnter() {
+        print("startGroupEnter")
     }
 }

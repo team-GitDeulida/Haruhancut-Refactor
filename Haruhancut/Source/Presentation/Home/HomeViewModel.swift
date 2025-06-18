@@ -5,13 +5,14 @@
 //
 
 import UIKit
+import RxCocoa
 
 protocol HomeViewModelType {
     
 }
 
 final class HomeViewModel: HomeViewModelType {
-    
+    let group = BehaviorRelay<HCGroup?>(value: nil)
 }
 
 final class StubHomeViewModel: HomeViewModelType {
