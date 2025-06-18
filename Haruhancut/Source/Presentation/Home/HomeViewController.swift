@@ -178,3 +178,4 @@ extension HomeViewController: UIPageViewControllerDataSource {
 #Preview {
     UINavigationController(rootViewController: HomeViewController(homeViewModel: StubHomeViewModel()))
 }
+

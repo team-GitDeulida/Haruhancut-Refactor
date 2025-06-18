@@ -23,7 +23,7 @@ final class FeedView: UIView {
         return collectionView
     }()
     
-    private let bubbleView = BubbleView(text: "사진 추가하기")
+    let bubbleView = BubbleView(text: "사진 추가하기")
     
     lazy var cameraBtn: UIButton = {
         let button = UIButton()

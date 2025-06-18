@@ -10,7 +10,7 @@ import RxSwift
 final class FeedViewController: UIViewController {
     weak var coordinator: HomeCoordinator?
     private let homeViewModel: HomeViewModelType
-    private let customView = FeedView()
+    private var customView = FeedView()
     private let disposeBag = DisposeBag()
     
     /// 이벤트 콜백 (Home에서 알람 울리기)
@@ -56,6 +56,39 @@ final class FeedViewController: UIViewController {
             ) { _, post, cell in
                 cell.configure(post: post)
             }
+            .disposed(by: disposeBag)
+        
+        /// 포스트가 비엇을 때 emltyLabel 보이게
+        homeViewModel.transform().todayPosts
+            .drive(onNext: { [weak self] posts in
+                guard let self = self else { return }
+                
+                /// 문구 보이게
+                self.customView.emptyLabel.isHidden = !posts.isEmpty
+                
+                /// 포스트가 비어있지 않으면서 내가 작성판 포스트가 하나라도 있다면
+                if !posts.isEmpty && posts.contains(where: { $0.userId == self.homeViewModel.user.value?.uid}
+                ) {
+                    /// bubble
+                    self.customView.bubbleView.text = "오늘 사진 추가 완료"
+                    self.customView.bubbleView.alpha = 0.6
+                } else {
+                    self.customView.bubbleView.text = "사진 추가하기"
+                }
+            }).disposed(by: disposeBag)
+        
+        // 오늘 업로드 여부에 따라 카메라 버튼 활성회/비활성화
+        homeViewModel.didUserPostToday
+            .inverted() // 제일 하단 참고
+            .asDriver(onErrorJustReturn: false)
+            .drive(customView.cameraBtn.rx.isEnabled)
+            .disposed(by: disposeBag)
+        
+        // 커메라 버튼 투명도 조절
+        homeViewModel.didUserPostToday
+            .map { $0 ? 0.3 : 1.0 }
+            .asDriver(onErrorJustReturn: 1.0)
+            .drive(customView.cameraBtn.rx.alpha)
             .disposed(by: disposeBag)
     }
 }
@@ -110,21 +143,21 @@ extension FeedViewController: UIImagePickerControllerDelegate, UINavigationContr
             // 없으면 fallback (이 경우 경고 발생 가능)
             present(picker, animated: true)
         }
-        
-        // 이미지 선택 완료
-        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-            picker.dismiss(animated: true)
+    }
+    
+    // 이미지 선택 완료
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        picker.dismiss(animated: true)
 
-            if let image = info[.originalImage] as? UIImage {
-                // ✅ 기존 업로드 흐름과 동일하게 처리
-                coordinator?.startToUpload(image: image, cameraType: .gallary)
-            }
+        if let image = info[.originalImage] as? UIImage {
+            // ✅ 기존 업로드 흐름과 동일하게 처리
+            coordinator?.startToUpload(image: image, cameraType: .gallary)
         }
-        
-        // 선택 취소
-        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-            picker.dismiss(animated: true)
-        }
+    }
+    
+    // 선택 취소
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true)
     }
 }
 
@@ -179,3 +212,4 @@ extension FeedViewController {
 #Preview {
     FeedViewController(homeViewModel: StubHomeViewModel())
 }
+
