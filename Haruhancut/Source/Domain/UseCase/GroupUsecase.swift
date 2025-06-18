@@ -13,6 +13,9 @@ protocol GroupUsecaseProtocol {
     func updateUserGroupId(groupId: String) -> Observable<Result<Void, GroupError>>
     func fetchGroup(groupId: String) -> Observable<Result<HCGroup, GroupError>>
     func joinGroup(inviteCode: String) -> RxSwift.Observable<Result<HCGroup, GroupError>>
+    func uploadImage(image: UIImage, path: String) -> Observable<URL?>
+    func updateGroup(path: String, post: PostDTO) -> Observable<Bool>
+    func observeValueStream<T: Decodable>(path: String, type: T.Type) -> Observable<T>
 }
 
 final class GroupUsecase: GroupUsecaseProtocol {
@@ -38,6 +41,18 @@ final class GroupUsecase: GroupUsecaseProtocol {
     func joinGroup(inviteCode: String) -> RxSwift.Observable<Result<HCGroup, GroupError>> {
         return repository.joinGroup(inviteCode: inviteCode)
     }
+    
+    func uploadImage(image: UIImage, path: String) -> Observable<URL?> {
+        return repository.uploadImage(image: image, path: path)
+    }
+    
+    func updateGroup(path: String, post: PostDTO) -> Observable<Bool> {
+        return repository.updateGroup(path: path, post: post)
+    }
+    
+    func observeValueStream<T: Decodable>(path: String, type: T.Type) -> Observable<T> {
+        return repository.observeValueStream(path: path, type: type)
+    }
 }
 
 final class StubGroupUsecase: GroupUsecaseProtocol {
@@ -56,4 +71,24 @@ final class StubGroupUsecase: GroupUsecaseProtocol {
     func joinGroup(inviteCode: String) -> RxSwift.Observable<Result<HCGroup, GroupError>> {
         return .just(.failure(.fetchGroupError))
     }
+    
+    func uploadImage(image: UIImage, path: String) -> Observable<URL?> {
+        return .just(nil)
+    }
+    
+    func updateGroup(path: String, post: PostDTO) -> Observable<Bool> {
+        return .just(false)
+    }
+    
+    func observeValueStream<T: Decodable>(path: String, type: T.Type) -> Observable<T> {
+        let dummyJSON = "{}".data(using: .utf8)!
+        
+        do {
+            let value = try JSONDecoder().decode(T.self, from: dummyJSON)
+            return .just(value)
+        } catch {
+            fatalError("❌ StubGroupUsecase: \(T.self) 디코딩 실패. 실제 타입을 확인하세요.")
+        }
+    }
 }
+

@@ -42,6 +42,7 @@ protocol FirebaseAuthManagerProtocol {
     func updateUserGroupId(groupId: String) -> Observable<Result<Void, GroupError>>
     func fetchGroup(groupId: String) -> Observable<Result<HCGroup, GroupError>>
     func joinGroup(inviteCode: String) -> Observable<Result<HCGroup, GroupError>>
+    func updateGroup(path: String, post: PostDTO) -> Observable<Bool>
     
     // 스냅샷관련
     func observeValueStream<T: Decodable>(path: String, type: T.Type) -> Observable<T>
@@ -477,6 +478,17 @@ extension FirebaseAuthManager {
                 print("❌ 그룹 조회 실패: \(error)")
                 return Observable.just(.failure(.fetchGroupError))
             }
+    }
+    
+    
+    
+    /// 그룹 업데이트
+    /// - Parameters:
+    ///   - path: 업데이트할 경로
+    ///   - post: 올릴 포스트
+    /// - Returns: 업데이트 결과
+    func updateGroup(path: String, post: PostDTO) -> Observable<Bool> {
+        return updateValue(path: path, value: post)
     }
 }
 

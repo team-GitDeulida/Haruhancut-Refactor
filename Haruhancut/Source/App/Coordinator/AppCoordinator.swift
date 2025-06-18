@@ -69,7 +69,11 @@ final class AppCoordinator: Coordinator {
     
     /// 홈 플로우
     func startHomeCoordinator() {
-        let homeViewModel = HomeViewModel()
+        let homeViewModel = HomeViewModel(
+            loginUsecase: DIContainer.shared.resolve(LoginUsecase.self),
+            groupUsecase: DIContainer.shared.resolve(GroupUsecase.self),
+            userRelay: loginViewModel.user
+        )
         
         let coordinator = HomeCoordinator(
             navigationController: navigationController,
@@ -222,5 +226,29 @@ final class HomeCoordinator: Coordinator {
         let vc = GroupEnterViewController(groupViewModel: groupVM)
         vc.coordinator = self
         navigationController.pushViewController(vc, animated: true)
+    }
+    
+    func startCamera() {
+        let vc = CameraViewController()
+        vc.coordinator = self
+        navigationController.pushViewController(vc, animated: true)
+    }
+    
+    func startToUpload(image: UIImage, cameraType: CameraType) {
+        if cameraType == .camera {
+            homeViewModel.cameraType = .camera
+        } else {
+            homeViewModel.cameraType = .gallary
+        }
+        
+        let uploadVC = ImageUploadViewController(image: image,
+                                                 homeViewModel: homeViewModel)
+        uploadVC.coordinator = self
+        navigationController.pushViewController(uploadVC, animated: true)
+    }
+    
+    func backToHome() {
+        // 쌓여있던 모든 화면 제거하고 루트인 homeVC로 이동
+        navigationController.popToRootViewController(animated: true)
     }
 }

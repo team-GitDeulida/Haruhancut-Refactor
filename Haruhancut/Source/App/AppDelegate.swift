@@ -89,7 +89,8 @@ extension AppDelegate {
         let loginUsecase = LoginUsecase(repository: authRepository)
         DIContainer.shared.register(LoginUsecase.self, dependency: loginUsecase)
         
-        let groupRepository = GroupRepository(firebaseAuthManager: firebaseAuthManager)
+        let groupRepository = GroupRepository(firebaseAuthManager: firebaseAuthManager,
+                                              firebaseStorageManager: firebaseStorageManager)
         let groupUsecase = GroupUsecase(repository: groupRepository)
         DIContainer.shared.register(GroupUsecase.self, dependency: groupUsecase)
     }

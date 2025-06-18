@@ -16,14 +16,20 @@ protocol GroupRepositoryProtocol {
     func updateUserGroupId(groupId: String) -> Observable<Result<Void, GroupError>>
     func fetchGroup(groupId: String) -> Observable<Result<HCGroup, GroupError>>
     func joinGroup(inviteCode: String) -> RxSwift.Observable<Result<HCGroup, GroupError>>
+    func uploadImage(image: UIImage, path: String) -> Observable<URL?>
+    func updateGroup(path: String, post: PostDTO) -> Observable<Bool>
+    func observeValueStream<T: Decodable>(path: String, type: T.Type) -> Observable<T>
 }
 
 final class GroupRepository: GroupRepositoryProtocol {
 
     private let firebaseAuthManager: FirebaseAuthManagerProtocol
+    private let firebaseStorageManager: FirebaseStorageManagerProtocol
     
-    init(firebaseAuthManager: FirebaseAuthManagerProtocol) {
+    init(firebaseAuthManager: FirebaseAuthManagerProtocol, firebaseStorageManager: FirebaseStorageManagerProtocol
+    ) {
         self.firebaseAuthManager = firebaseAuthManager
+        self.firebaseStorageManager = firebaseStorageManager
     }
     
     func createGroup(groupName: String) -> RxSwift.Observable<Result<(groupId: String, inviteCode: String), GroupError>> {
@@ -40,5 +46,17 @@ final class GroupRepository: GroupRepositoryProtocol {
     
     func joinGroup(inviteCode: String) -> RxSwift.Observable<Result<HCGroup, GroupError>> {
         return firebaseAuthManager.joinGroup(inviteCode: inviteCode)
+    }
+    
+    func uploadImage(image: UIImage, path: String) -> Observable<URL?> {
+        return firebaseStorageManager.uploadImage(image: image, path: path)
+    }
+    
+    func updateGroup(path: String, post: PostDTO) -> Observable<Bool> {
+        return firebaseAuthManager.updateGroup(path: path, post: post)
+    }
+    
+    func observeValueStream<T: Decodable>(path: String, type: T.Type) -> Observable<T> {
+        return firebaseAuthManager.observeValueStream(path: path, type: type)
     }
 }

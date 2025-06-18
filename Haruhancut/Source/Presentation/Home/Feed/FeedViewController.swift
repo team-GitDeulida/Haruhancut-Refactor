@@ -5,11 +5,13 @@
 //
 
 import UIKit
+import RxSwift
 
 final class FeedViewController: UIViewController {
     weak var coordinator: HomeCoordinator?
     private let homeViewModel: HomeViewModelType
     private let customView = FeedView()
+    private let disposeBag = DisposeBag()
     
     /// 이벤트 콜백 (Home에서 알람 울리기)
     var onPresentChooseAlert: ((UIAlertController) -> Void)?
@@ -45,7 +47,15 @@ final class FeedViewController: UIViewController {
 
     // MARK: - Bindings
     private func bindViewModel() {
-
+        /// 포스트 바인딩
+        homeViewModel.transform().todayPosts
+            .drive(customView.collectionView.rx.items(
+                cellIdentifier: FeedCell.reuseIdentifier,
+                cellType: FeedCell.self)
+            ) { _, post, cell in
+                cell.configure(post: post)
+            }
+            .disposed(by: disposeBag)
     }
 }
 
@@ -58,12 +68,12 @@ extension FeedViewController {
 
         // 📷 사진 촬영
         alert.addAction(UIAlertAction(title: "카메라로 찍기", style: .default) { [weak self] _ in
-            // self?.coordinator?.startCamera()
+             self?.coordinator?.startCamera()
         })
 
         // 🖼️ 앨범에서 선택
         alert.addAction(UIAlertAction(title: "앨범에서 선택", style: .default) { [weak self] _ in
-            // self?.presentImagePicker(sourceType: .photoLibrary)
+             self?.presentImagePicker(sourceType: .photoLibrary)
         })
 
         // ❌ 취소
@@ -106,7 +116,7 @@ extension FeedViewController: UIImagePickerControllerDelegate, UINavigationContr
 
             if let image = info[.originalImage] as? UIImage {
                 // ✅ 기존 업로드 흐름과 동일하게 처리
-                // coordinator?.navigateToUpload(image: image, cameraType: .gallary)
+                coordinator?.startToUpload(image: image, cameraType: .gallary)
             }
         }
         
