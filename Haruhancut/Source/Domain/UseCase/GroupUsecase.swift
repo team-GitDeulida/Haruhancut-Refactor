@@ -10,12 +10,14 @@ import UIKit
 
 protocol GroupUsecaseProtocol {
     func createGroup(groupName: String) -> Observable<Result<(groupId: String, inviteCode: String), GroupError>>
-    func updateUserGroupId(groupId: String) -> Observable<Result<Void, GroupError>>
-    func fetchGroup(groupId: String) -> Observable<Result<HCGroup, GroupError>>
     func joinGroup(inviteCode: String) -> RxSwift.Observable<Result<HCGroup, GroupError>>
-    func uploadImage(image: UIImage, path: String) -> Observable<URL?>
+    func updateUserGroupId(groupId: String) -> Observable<Result<Void, GroupError>>
     func updateGroup(path: String, post: PostDTO) -> Observable<Bool>
+    func fetchGroup(groupId: String) -> Observable<Result<HCGroup, GroupError>>
+    func uploadImage(image: UIImage, path: String) -> Observable<URL?>
+    func deleteImage(path: String) -> Observable<Bool>
     func observeValueStream<T: Decodable>(path: String, type: T.Type) -> Observable<T>
+    func deleteValue(path: String) -> Observable<Bool>
 }
 
 final class GroupUsecase: GroupUsecaseProtocol {
@@ -53,6 +55,14 @@ final class GroupUsecase: GroupUsecaseProtocol {
     func observeValueStream<T: Decodable>(path: String, type: T.Type) -> Observable<T> {
         return repository.observeValueStream(path: path, type: type)
     }
+    
+    func deleteImage(path: String) -> Observable<Bool> {
+        return repository.deleteImage(path: path)
+    }
+    
+    func deleteValue(path: String) -> Observable<Bool> {
+        return repository.deleteValue(path: path)
+    }
 }
 
 final class StubGroupUsecase: GroupUsecaseProtocol {
@@ -89,6 +99,14 @@ final class StubGroupUsecase: GroupUsecaseProtocol {
         } catch {
             fatalError("❌ StubGroupUsecase: \(T.self) 디코딩 실패. 실제 타입을 확인하세요.")
         }
+    }
+    
+    func deleteImage(path: String) -> Observable<Bool> {
+        return .just(false)
+    }
+    
+    func deleteValue(path: String) -> Observable<Bool> {
+        return .just(false)
     }
 }
 

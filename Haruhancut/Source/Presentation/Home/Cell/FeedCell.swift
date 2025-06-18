@@ -25,7 +25,7 @@ final class FeedCell: UICollectionViewCell {
     }()
     
     private let timeLabel: HCLabel = {
-        let label = HCLabel(type: .feedNickname(text: "1분 전"))
+        let label = HCLabel(type: .feedTime(text: "1분 전"))
         return label
     }()
     

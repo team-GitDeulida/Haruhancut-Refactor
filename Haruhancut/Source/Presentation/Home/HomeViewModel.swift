@@ -22,6 +22,7 @@ protocol HomeViewModelType {
     var didUserPostToday: Observable<Bool> { get }
     func uploadPost(image: UIImage) -> Driver<Bool>
     func transform() -> HomeViewModel.Output
+    func deletePost(_ post: Post)
 }
 
 final class HomeViewModel: HomeViewModelType {
@@ -91,6 +92,38 @@ final class HomeViewModel: HomeViewModelType {
         }
     }
     
+    /// 그룹 스냅샷
+    private func observeGroupRealtime(groupId: String) {
+        let path = "groups/\(groupId)"
+        
+        /// 1. 기존 스냅샷 제거
+        groupSnapshotDisposable?.dispose()
+        
+        /// 2. 스냅샷 시작
+        groupSnapshotDisposable = self.groupUsecase.observeValueStream(path: path,
+                                                                       type: HCGroupDTO.self)
+        .compactMap { $0.toModel() }
+        .subscribe(onNext: { [weak self] group in
+            guard let self = self else { return }
+            self.group.accept(group)
+            
+            /// 캐시 저장
+            UserDefaultsManager.shared.saveGroup(group)
+            
+            /// 3. posts를 날짜별로 정렬하여 포스트 변수에 바인딩
+            let allPosts = group.postsByDate
+                .flatMap { $0.value }
+                .sorted(by: { $0.createdAt < $1.createdAt })
+            
+            self.posts.accept(allPosts)
+            
+            /// 4. 최신 포스트 체크후 위젯 컨테이너에 없으면 저장한다
+            // TODO: -
+        })
+        
+    }
+    
+    /// 그룹 사진 업로드
     func uploadPost(image: UIImage) -> Driver<Bool> {
         if cameraType == .camera {
             UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
@@ -133,37 +166,31 @@ final class HomeViewModel: HomeViewModelType {
             .asDriver(onErrorJustReturn: false)
     }
     
-    private func observeGroupRealtime(groupId: String) {
-        let path = "groups/\(groupId)"
+    /// 그룹 사진 삭제
+    func deletePost(_ post: Post) {
+        guard let groupId = group.value?.groupId else { return }
+
+        let dateKey = post.createdAt.toDateKey()
+        let dbPath = "groups/\(groupId)/postsByDate/\(dateKey)/\(post.postId)"
+        let storagePath = "groups/\(groupId)/images/\(post.postId).jpg"
         
-        /// 1. 기존 스냅샷 제거
-        groupSnapshotDisposable?.dispose()
-        
-        /// 2. 스냅샷 시작
-        groupSnapshotDisposable = self.groupUsecase.observeValueStream(path: path,
-                                                                       type: HCGroupDTO.self)
-        .compactMap { $0.toModel() }
-        .subscribe(onNext: { [weak self] group in
-            guard let self = self else { return }
-            self.group.accept(group)
+        /// 1. realtime Database에서 삭제
+        self.groupUsecase.deleteValue(path: dbPath)
+            .flatMap { success -> Observable<Bool> in
+                guard success else { return .just(false) }
+                
+                /// 2. storage에서도 삭제
+                return self.groupUsecase.deleteImage(path: storagePath)
+                
+            }
+            .bind(onNext: { success in
+                
+                print("✅ 삭제 완료: \(success)")
+                /// 추후 위젯 관련 기능 추가 예정
+            })
+            .disposed(by: disposeBag)
             
-            /// 캐시 저장
-            UserDefaultsManager.shared.saveGroup(group)
-            
-            /// 3. posts를 날짜별로 정렬하여 포스트 변수에 바인딩
-            let allPosts = group.postsByDate
-                .flatMap { $0.value }
-                .sorted(by: { $0.createdAt < $1.createdAt })
-            
-            self.posts.accept(allPosts)
-            
-            /// 4. 최신 포스트 체크후 위젯 컨테이너에 없으면 저장한다
-            // TODO: -
-        })
-        
     }
-    
-    
 }
 
 extension HomeViewModel {
@@ -194,6 +221,7 @@ extension HomeViewModel {
 }
 
 final class StubHomeViewModel: HomeViewModelType {
+    
     let user = BehaviorRelay<User?>(value: nil)
     let group = BehaviorRelay<HCGroup?>(value: nil)
     let posts = BehaviorRelay<[Post]>(value: [])
@@ -208,5 +236,5 @@ final class StubHomeViewModel: HomeViewModelType {
                      groupName: Driver.just("stub-group-name"),
                      allPostsByDate: Driver.just([:]))
     }
-    
+    func deletePost(_ post: Post) {}
 }

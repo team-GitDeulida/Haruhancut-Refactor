@@ -38,6 +38,7 @@ final class FeedViewController: UIViewController {
         super.viewDidLoad()
         addtarget()
         bindViewModel()
+        setupLongPressGesture()
     }
     
     // MARK: - addTarget
@@ -127,6 +128,53 @@ extension FeedViewController: UIImagePickerControllerDelegate, UINavigationContr
     }
 }
 
+// MARK: - 롱프레스 핸들러
+extension FeedViewController {
+    
+    /// 1. 컬렉션뷰에 롱프레스 핸들러 설정
+    private func setupLongPressGesture() {
+        let longPressGesture = UILongPressGestureRecognizer(target: self,
+                                                            action: #selector(handleLongPress(_:)))
+        customView.collectionView.addGestureRecognizer(longPressGesture)
+    }
+    
+    /// 2. 롱프레스 메서드
+    @objc private func handleLongPress(_ gesture: UILongPressGestureRecognizer) {
+        guard gesture.state == .began else { return } // 제스처가 시작될 때만 처리
+        let location = gesture.location(in: customView.collectionView)
+        guard let indexPath = customView.collectionView.indexPathForItem(at: location),
+              indexPath.item < homeViewModel.posts.value.count else { return }
+        
+        // 1) 오늘 날짜 포스트만 뽑아서
+        let todayPosts = homeViewModel.posts
+            .value
+            .filter { $0.isToday }
+
+        // 2) indexPath.item이 오늘 포스트 배열 범위 안에 있는지 체크
+        guard indexPath.item < todayPosts.count else { return }
+
+        // 3) 거기서 해당 post를 꺼내서
+        let post = todayPosts[indexPath.item]
+        
+        // 다른 사람 포스트면 삭제 불가
+        guard post.userId == homeViewModel.user.value?.uid else {
+            print("❌ 다른 사람의 게시물은 삭제할 수 없습니다.")
+            return
+        }
+
+        let cancel = UIAlertAction(title: "취소", style: .cancel)
+        let delete = UIAlertAction(title: "삭제", style: .destructive) { [weak self] _ in
+            self?.homeViewModel.deletePost(post)
+        }
+        
+        let alert = UIAlertController(title: "삭제 확인", message: "이 사진을 삭제하시겠습니까?", preferredStyle: .alert)
+        alert.addAction(delete)
+        alert.addAction(cancel)
+        if let presentAlert = onPresentChooseAlert {
+            presentAlert(alert)
+        }
+    }
+}
 
 #Preview {
     FeedViewController(homeViewModel: StubHomeViewModel())

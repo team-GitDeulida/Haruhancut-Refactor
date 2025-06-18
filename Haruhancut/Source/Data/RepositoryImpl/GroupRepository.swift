@@ -13,12 +13,14 @@ import UIKit
 
 protocol GroupRepositoryProtocol {
     func createGroup(groupName: String) -> Observable<Result<(groupId: String, inviteCode: String), GroupError>>
-    func updateUserGroupId(groupId: String) -> Observable<Result<Void, GroupError>>
-    func fetchGroup(groupId: String) -> Observable<Result<HCGroup, GroupError>>
     func joinGroup(inviteCode: String) -> RxSwift.Observable<Result<HCGroup, GroupError>>
-    func uploadImage(image: UIImage, path: String) -> Observable<URL?>
+    func updateUserGroupId(groupId: String) -> Observable<Result<Void, GroupError>>
     func updateGroup(path: String, post: PostDTO) -> Observable<Bool>
+    func fetchGroup(groupId: String) -> Observable<Result<HCGroup, GroupError>>
+    func uploadImage(image: UIImage, path: String) -> Observable<URL?>
+    func deleteImage(path: String) -> Observable<Bool>
     func observeValueStream<T: Decodable>(path: String, type: T.Type) -> Observable<T>
+    func deleteValue(path: String) -> Observable<Bool>
 }
 
 final class GroupRepository: GroupRepositoryProtocol {
@@ -36,6 +38,14 @@ final class GroupRepository: GroupRepositoryProtocol {
         return firebaseAuthManager.createGroup(groupName: groupName)
     }
     
+    func joinGroup(inviteCode: String) -> RxSwift.Observable<Result<HCGroup, GroupError>> {
+        return firebaseAuthManager.joinGroup(inviteCode: inviteCode)
+    }
+    
+    func updateGroup(path: String, post: PostDTO) -> Observable<Bool> {
+        return firebaseAuthManager.updateGroup(path: path, post: post)
+    }
+    
     func updateUserGroupId(groupId: String) -> RxSwift.Observable<Result<Void, GroupError>> {
         return firebaseAuthManager.updateUserGroupId(groupId: groupId)
     }
@@ -44,19 +54,19 @@ final class GroupRepository: GroupRepositoryProtocol {
         return firebaseAuthManager.fetchGroup(groupId: groupId)
     }
     
-    func joinGroup(inviteCode: String) -> RxSwift.Observable<Result<HCGroup, GroupError>> {
-        return firebaseAuthManager.joinGroup(inviteCode: inviteCode)
-    }
-    
     func uploadImage(image: UIImage, path: String) -> Observable<URL?> {
         return firebaseStorageManager.uploadImage(image: image, path: path)
     }
     
-    func updateGroup(path: String, post: PostDTO) -> Observable<Bool> {
-        return firebaseAuthManager.updateGroup(path: path, post: post)
+    func deleteImage(path: String) -> Observable<Bool> {
+        return firebaseStorageManager.deleteImage(path: path)
     }
     
     func observeValueStream<T: Decodable>(path: String, type: T.Type) -> Observable<T> {
         return firebaseAuthManager.observeValueStream(path: path, type: type)
+    }
+    
+    func deleteValue(path: String) -> Observable<Bool> {
+        return firebaseAuthManager.deleteValue(path: path)
     }
 }
