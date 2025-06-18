@@ -251,4 +251,10 @@ final class HomeCoordinator: Coordinator {
         // 쌓여있던 모든 화면 제거하고 루트인 homeVC로 이동
         navigationController.popToRootViewController(animated: true)
     }
+    
+    func startFeedDetail(post: Post) {
+        let vc = FeedDetailViewController(homeViewModel: homeViewModel, post: post)
+        vc.coordinator = self
+        navigationController.pushViewController(vc, animated: true)
+    }
 }

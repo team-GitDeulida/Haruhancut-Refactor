@@ -48,6 +48,16 @@ final class FeedViewController: UIViewController {
 
     // MARK: - Bindings
     private func bindViewModel() {
+        
+        /// 포스트 터치 바인딩
+        customView.collectionView.rx.modelSelected(Post.self)
+            .asDriver()
+            .drive(onNext: { [weak self] post in
+                guard let self = self else { return }
+                self.coordinator?.startFeedDetail(post: post)
+            })
+            .disposed(by: disposeBag)
+        
         /// 포스트 바인딩
         homeViewModel.transform().todayPosts
             .drive(customView.collectionView.rx.items(
