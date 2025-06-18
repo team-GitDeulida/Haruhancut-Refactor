@@ -177,6 +177,13 @@ final class HomeCoordinator: Coordinator {
     private let homeViewModel:  HomeViewModel
     private var groupViewModel: GroupViewModel?
     
+    // MARK: - 최초로 사용되는 순간에 딱 한 번만 초기화
+    private lazy var memberViewModel: MemberViewModel = {
+        return MemberViewModel(loginUsecase: DIContainer.shared.resolve(LoginUsecase.self),
+                               membersRelay: homeViewModel.members
+        )
+    }()
+    
     init(navigationController: UINavigationController,
          loginViewModel: LoginViewModel,
          homeViewModel: HomeViewModel
@@ -201,6 +208,7 @@ final class HomeCoordinator: Coordinator {
         let homeVC = HomeViewController(homeViewModel: homeViewModel)
         homeVC.coordinator = self
         navigationController.setViewControllers([homeVC], animated: true)
+        _ = memberViewModel
     }
     
     func startGroup() {
@@ -254,6 +262,13 @@ final class HomeCoordinator: Coordinator {
     
     func startFeedDetail(post: Post) {
         let vc = FeedDetailViewController(homeViewModel: homeViewModel, post: post)
+        vc.coordinator = self
+        navigationController.pushViewController(vc, animated: true)
+    }
+    
+    func startMembers() {
+        let vc = MemberViewController(memberviewModel: memberViewModel,
+                                      homeViewModel: homeViewModel)
         vc.coordinator = self
         navigationController.pushViewController(vc, animated: true)
     }

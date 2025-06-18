@@ -150,7 +150,7 @@ final class HomeViewController: UIViewController {
     
     /// 그룹 화면 이동
     @objc private func startMembers() {
-        // coordinator?.startMembers()
+         coordinator?.startMembers()
     }
 }
 

@@ -76,6 +76,16 @@ final class HomeViewModel: HomeViewModelType {
                 self.observeGroupRealtime(groupId: groupId)
             })
             .disposed(by: disposeBag)
+        
+        /// 멤버 스냅샷
+        group
+            .compactMap { $0?.members.map { $0.key } }
+            .distinctUntilChanged { $0 == $1 }
+            .subscribe(onNext: { [weak self] memberUIDs in
+                self?.observeAllMembersRealtime(memberUIDs: memberUIDs)
+            })
+            .disposed(by: disposeBag)
+        
     }
     
     /// 캐시에서 그룹 불러오기(사용자 경험 향상)
@@ -121,6 +131,51 @@ final class HomeViewModel: HomeViewModelType {
             // TODO: -
         })
         
+    }
+    
+    /// 멤버 스냅샷
+    func observeAllMembersRealtime(memberUIDs: [String]) {
+        /// 1) 신규 uid구독 추가
+        memberUIDs.forEach { [weak self] uid in
+            guard let self = self else { return }
+            
+            if memberSnapshotDisposables[uid] == nil {
+                let disposable = self.groupUsecase.observeValueStream(path: "users/\(uid)",
+                                                                      type: UserDTO.self)
+                    .compactMap { $0.toModel() }
+                    .subscribe(onNext: { [weak self] user in
+                        guard let self = self else { return }
+                        var currentMembers = self.members.value
+                        if let idx = currentMembers.firstIndex(where: { $0.uid == user.uid }) {
+                            currentMembers[idx] = user
+                        } else {
+                            currentMembers.append(user)
+                        }
+                        self.members.accept(currentMembers)
+                        
+                    }, onError: { error in
+                        print("❌ 사용자 정보 없음 캐시 삭제 진행")
+                        self.user.accept(nil)
+                        UserDefaultsManager.shared.removeUser()
+                        UserDefaultsManager.shared.removeGroup()
+                        
+                        // 강제 로그아웃 유도
+                        NotificationCenter.default.post(name: .userForceLoggedOut, object: nil)
+                    }
+                    )
+                memberSnapshotDisposables[uid] = disposable
+            }
+            
+        }
+        // 2. 더 이상 없는 uid 구독 해제 및 members에서 제거
+        let removedUIDs = Set(memberSnapshotDisposables.keys).subtracting(memberUIDs)
+        removedUIDs.forEach { uid in
+            memberSnapshotDisposables[uid]?.dispose()
+            memberSnapshotDisposables.removeValue(forKey: uid)
+            var current = self.members.value
+            current.removeAll { $0.uid == uid }
+            self.members.accept(current)
+        }
     }
     
     /// 그룹 사진 업로드

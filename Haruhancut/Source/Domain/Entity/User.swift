@@ -383,6 +383,31 @@ extension HCGroupDTO {
 
 
 // MARK: - Sample
+extension User {
+    static var sampleUser1: User {
+        User(uid: "stub-uid",
+             registerDate: Date(),
+             loginPlatform: .apple,
+             nickname: "stub-nickname-apple",
+             birthdayDate: Date.toKoreanDate(year: 2000, month: 1, day: 29),
+             gender: .male,
+             isPushEnabled: true
+        )
+    }
+    
+    static var sampleUser2: User {
+        User(uid: "stub-uid",
+             registerDate: Date(),
+             loginPlatform: .kakao,
+             nickname: "stub-nickname-kakao",
+             birthdayDate: Date.toKoreanDate(year: 2000, month: 1, day: 29),
+             gender: .male,
+             isPushEnabled: true
+        )
+    }
+}
+
+// MARK: - Sample
 extension Post {
     static var samplePosts = [
         Post(postId: "postId1",
