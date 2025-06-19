@@ -23,6 +23,7 @@ protocol HomeViewModelType {
     func uploadPost(image: UIImage) -> Driver<Bool>
     func transform() -> HomeViewModel.Output
     func deletePost(_ post: Post)
+    func fetchGroup(groupId: String)
     
     /// 댓글 관련
     func addComment(post: Post, text: String) -> Driver<Bool>
@@ -105,6 +106,27 @@ final class HomeViewModel: HomeViewModelType {
         } else {
             print("❌ 캐시된 그룹 없음 --- ")
         }
+    }
+    
+    // MARK: - 프로필 뷰컨에서 사용
+    func fetchGroup(groupId: String) {
+        self.groupUsecase.fetchGroup(groupId: groupId)
+            .bind(onNext: { result in
+                switch result {
+                case .success(let group):
+                    self.group.accept(group)
+                    UserDefaultsManager.shared.saveGroup(group)
+                    
+                    // posts 업데이트
+                    let allPosts = group.postsByDate.flatMap { $0.value }
+                    let sortedPosts = allPosts.sorted(by: { $0.createdAt < $1.createdAt }) // 오래된 순
+                    self.posts.accept(sortedPosts)
+                    
+                case .failure(let error):
+                    print("❌ 그룹 가져오기 실패: \(error)")
+                }
+            })
+            .disposed(by: disposeBag)
     }
     
     /// 그룹 스냅샷
@@ -336,6 +358,7 @@ extension HomeViewModel {
 }
 
 final class StubHomeViewModel: HomeViewModelType {
+   
     let user = BehaviorRelay<User?>(value: nil)
     let group = BehaviorRelay<HCGroup?>(value: nil)
     let posts = BehaviorRelay<[Post]>(value: [])
@@ -354,8 +377,8 @@ final class StubHomeViewModel: HomeViewModelType {
     func addComment(post: Post, text: String) -> Driver<Bool> {
         return .just(false)
     }
-    
     func deleteComment(post: Post, commentId: String) -> Driver<Bool> {
         return .just(false)
     }
+    func fetchGroup(groupId: String) {}
 }

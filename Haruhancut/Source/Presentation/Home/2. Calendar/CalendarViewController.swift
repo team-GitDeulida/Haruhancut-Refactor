@@ -103,7 +103,7 @@ extension CalendarViewController: FSCalendarDelegate, FSCalendarDataSource, FSCa
         guard let posts = homeViewModel.group.value?.postsByDate[dateString], !posts.isEmpty else { return }
 
         let viewer = ImageScrollViewController(posts: posts, selectedDate: dateString, homeViewModel: homeViewModel)
-        viewer.coordinator = coordinator
+        // viewer.coordinator = coordinator
         viewer.modalPresentationStyle = .fullScreen
         
         /// onPresent 콜백 호출

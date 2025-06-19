@@ -176,6 +176,7 @@ final class HomeCoordinator: Coordinator {
     private let loginViewModel: LoginViewModel
     private let homeViewModel:  HomeViewModel
     private var groupViewModel: GroupViewModel?
+    private let profileViewModel: ProfileViewModel
     
     // MARK: - 최초로 사용되는 순간에 딱 한 번만 초기화
     private lazy var memberViewModel: MemberViewModel = {
@@ -191,6 +192,8 @@ final class HomeCoordinator: Coordinator {
         self.navigationController = navigationController
         self.loginViewModel = loginViewModel
         self.homeViewModel = homeViewModel
+        self.profileViewModel = ProfileViewModel(loginUsecase: DIContainer.shared.resolve(LoginUsecase.self),
+                                                 userRelay: loginViewModel.user)
     }
     
     func start() {
@@ -277,5 +280,13 @@ final class HomeCoordinator: Coordinator {
         let vc = FeedCommentViewController(homeViewModel: homeViewModel, post: post)
         vc.modalPresentationStyle = .pageSheet
         navigationController.present(vc, animated: true)
+    }
+    
+    func startProfile() {
+        let vc = ProfileViewController(profileViewModel: profileViewModel,
+                                       homeViewModel: homeViewModel,
+                                       loginViewModel: loginViewModel)
+        vc.coordinator = self
+        navigationController.pushViewController(vc, animated: true)
     }
 }

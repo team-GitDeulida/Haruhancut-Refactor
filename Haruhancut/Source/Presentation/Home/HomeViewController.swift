@@ -149,7 +149,7 @@ final class HomeViewController: UIViewController {
     
     /// 프로필 화면 이동
     @objc private func startProfile() {
-        // coordinator?.startProfile()
+         coordinator?.startProfile()
     }
     
     /// 그룹 화면 이동

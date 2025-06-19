@@ -74,15 +74,18 @@ final class ImageScrollViewController: UIViewController {
             .asDriver()
             .drive(onNext: { [weak self] in
                 guard let self = self else { return }
-                print("탭")
-                
+
+                // MARK: - 이렇게 하면 되는데
                 let vc = FeedCommentViewController(homeViewModel: homeViewModel, post: customView.posts[customView.currentIndex])
                 vc.modalPresentationStyle = .pageSheet
                 present(vc, animated: true)
                 
-//                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-//                    self.coordinator?.startComment(post: self.customView.posts[self.customView.currentIndex])
-//                }
+                // MARK: - 이렇게하면 에러발생
+                /*
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    self.coordinator?.startComment(post: self.customView.posts[self.customView.currentIndex])
+                }
+                 */
             }).disposed(by: disposeBag)
     }
 }
