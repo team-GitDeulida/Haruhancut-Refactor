@@ -59,6 +59,10 @@ final class HomeViewController: UIViewController {
     private lazy var calendarVC: CalendarViewController = {
         let vc = CalendarViewController(homeViewModel: homeViewModel)
         vc.coordinator = self.coordinator
+        
+        vc.onPresent = { [weak self] presentedVC in
+            self?.present(presentedVC, animated: true)
+        }
         return vc
     }()
     
