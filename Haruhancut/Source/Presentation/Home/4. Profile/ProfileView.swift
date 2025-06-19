@@ -17,12 +17,12 @@ final class ProfileView: UIView {
         return imageView
     }()
 
-    private lazy var nicknameLabel: HCLabel = {
-       let label = HCLabel(type: .main(text: nickname))
-        return label
-    }()
+    lazy var nicknameLabel: HCLabel = {
+    let label = HCLabel(type: .main(text: nickname))
+    return label
+}()
     
-    private lazy var editButton: UIButton = {
+    lazy var editButton: UIButton = {
         let button = UIButton()
         button.setImage(UIImage(systemName: "pencil"), for: .normal)
         button.tintColor = .mainWhite
@@ -39,7 +39,7 @@ final class ProfileView: UIView {
         return stack
     }()
     
-    private lazy var collectionView: UICollectionView = {
+    lazy var collectionView: UICollectionView = {
         let spacing: CGFloat = 1
         let columns: CGFloat = 3
 
@@ -56,7 +56,7 @@ final class ProfileView: UIView {
         layout.itemSize = CGSize(width: itemWidth, height: itemWidth * 1.5)
 
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        /// cv.register(ProfilePostCell.self, forCellWithReuseIdentifier: ProfilePostCell.identifier)
+        cv.register(ProfilePostCell.self, forCellWithReuseIdentifier: ProfilePostCell.identifier)
         cv.backgroundColor = .clear
         return cv
     }()

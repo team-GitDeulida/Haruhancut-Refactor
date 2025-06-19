@@ -15,6 +15,7 @@ protocol LoginViewModelType {
     func transform(input: LoginViewModel.NicknameInput) -> LoginViewModel.NicknameOutput
     func transform(input: LoginViewModel.BirthdayInput) -> LoginViewModel.BirthdayOutput
     func transform(input: LoginViewModel.ProfileInput) -> LoginViewModel.ProfileOutput
+    func transform(input: LoginViewModel.NicknameEditInput) -> LoginViewModel.NicknameEditOutput
 }
 
 final class LoginViewModel: LoginViewModelType {
@@ -333,6 +334,51 @@ extension LoginViewModel {
     }
 }
 
+// MARK: - NicknameEdit
+extension LoginViewModel {
+    struct NicknameEditInput {
+        let nickmaneText: Observable<String>
+        let endBtnTapped: Observable<Void>
+    }
+    
+    struct NicknameEditOutput {
+        let isNicknameValid: Driver<Bool>
+        let nicknameChangeResult: Driver<Result<Void, LoginError>>
+    }
+    
+    func transform(input: NicknameEditInput) -> NicknameEditOutput {
+        /// 닉네임 유효성
+        let isNicknameValid = input.nickmaneText
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines).count != 0 }
+            .distinctUntilChanged()             /// 중복된 값은 무시하고 변경될 때만 다음 연산자 실행
+            .asDriver(onErrorJustReturn: false) /// 에러 없이 UI 바인딩용으로 적절한 Driver<Bool>로 변환
+        
+        /// 닉네임 변경 결과
+        let endBtnTapped = input.endBtnTapped   /// 완료 버튼이 눌렸을 때의 이벤트 (Observable<Void>)
+            .withLatestFrom(input.nickmaneText) /// 버튼이 눌렸을 때 가장 최신 닉네임 값을 가져옴
+            .flatMapLatest { [weak self] newNickname -> Observable<Result<Void, LoginError>> in /// 닉네임이 바뀔 때마다 새로운 요청을 보내되, 이전 요청은 무시
+                guard let self = self,
+                      var currentUser = self.user.value else {
+                    return Observable.just(.failure(.noUser))
+                }
+                
+                currentUser.nickname = newNickname
+                self.user.accept(currentUser)
+                
+                return self.loginUseCase.updateUser(user: currentUser)
+                    .map { $0.mapToVoid() }
+                    
+            }
+        
+        let nicknameEditResult = endBtnTapped
+            .asDriver(onErrorJustReturn: .failure(.noUser))
+        
+        
+        return NicknameEditOutput(isNicknameValid: isNicknameValid,
+                                  nicknameChangeResult: nicknameEditResult)
+    }
+}
+
 
 // MARK: - FCM 토큰 생성 함수
 extension LoginViewModel {
@@ -373,4 +419,7 @@ final class StubLoginViewModel: LoginViewModelType {
         return .init(signUpResult: .just(.success(())))
     }
     
+    func transform(input: LoginViewModel.NicknameEditInput) -> LoginViewModel.NicknameEditOutput {
+        return .init(isNicknameValid: .just(false), nicknameChangeResult: Driver.just(.success(())))
+    }
 }

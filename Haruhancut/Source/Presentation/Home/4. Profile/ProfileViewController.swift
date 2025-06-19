@@ -43,18 +43,8 @@ final class ProfileViewController: UIViewController {
 
     // MARK: - Bindings
     private func bindViewModel() {
-        
-//        let urlString = homeViewModel.user.value?.profileImageURL ?? ""
-//        guard let url = URL(string: urlString) else {
-//            print("테스트없음")
-//            return
-//        }
-//        
-//        // MARK: - 비동기 kf 이미지 설정
-//        DispatchQueue.main.async {
-//            self.customView.profileImageView.setImage(with: url)
-//        }
-        
+
+        // MARK: - 프로필 유저 사진
         homeViewModel.user
             .compactMap { $0?.profileImageURL }
             .distinctUntilChanged()
@@ -67,6 +57,35 @@ final class ProfileViewController: UIViewController {
                     self.customView.profileImageView.setImage(with: url)
                 }
             }).disposed(by: disposeBag)
+        
+        // MARK: - 프로필 컬렉션 셀
+        homeViewModel.transform()
+            .allPostsByDate
+            .map { dict -> [Post] in
+                // 1) 날짜 키 내림차순 정렬
+                let sortedKeys = dict.keys.sorted(by: >)
+                // 2) 각 키의 [Post]를 꺼내서 하나의 배열로 합치기
+                return sortedKeys
+                    .compactMap { dict[$0] }
+                    .flatMap { $0 }
+                    .filter { $0.userId == self.homeViewModel.user.value?.uid }
+            }
+            .drive(customView.collectionView.rx.items(
+                cellIdentifier: ProfilePostCell.identifier,
+                cellType: ProfilePostCell.self)
+            ) { _, post, cell in
+                cell.configure(with: post)
+            }
+            .disposed(by: disposeBag)
+        
+        // MARK: - 프로필 컬렉션 셀 터치
+        customView.collectionView.rx.modelSelected(Post.self)
+            .asDriver()
+            .drive(onNext: { [weak self] post in
+                guard let self = self else { return }
+                self.coordinator?.startFeedDetail(post: post)
+            })
+            .disposed(by: disposeBag)
         
         
         // MARK: - 카메라 버튼 탭
@@ -88,6 +107,25 @@ final class ProfileViewController: UIViewController {
             previewVC.modalPresentationStyle = .fullScreen
             self.present(previewVC, animated: true)
         }
+        
+        // MARK: - 닉네임 수정 버튼 탭
+        customView.editButton.rx.tap
+            .asDriver()
+            .drive(onNext: { [weak self] in
+                guard let self = self else { return }
+                self.coordinator?.startNicknameEdit()
+            }).disposed(by: disposeBag)
+        
+        // MARK: - 닉네임 변경 감지
+        homeViewModel.user
+            .compactMap { $0?.nickname }
+            .distinctUntilChanged()
+            .asDriver(onErrorJustReturn: "홍길동")
+            .drive(onNext: { [weak self] nickname in
+                guard let self = self else { return }
+                self.customView.nicknameLabel.text = nickname
+            })
+            .disposed(by: disposeBag)
     }
 }
 

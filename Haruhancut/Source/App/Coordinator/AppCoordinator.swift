@@ -128,26 +128,26 @@ final class LoginFlowCoordinator: Coordinator {
     func showLogin() {
         let loginVC = LoginViewController(loginViewModel: loginViewModel)
         loginVC.coordinator = self
-        navigationController.setViewControllers([loginVC], animated: true)
+        self.navigationController.setViewControllers([loginVC], animated: true)
     }
     
     /// 닉네임 설정화면
     func showNicknameSetting() {
         let nickVC = NicknameSettingViewController(loginViewModel: loginViewModel)
         nickVC.coordinator = self
-        navigationController.setViewControllers([nickVC], animated: true)
+        self.navigationController.setViewControllers([nickVC], animated: true)
     }
     
     func showBirthdaySetting() {
         let birthVC = BirthdaySettingViewController(loginViewModel: loginViewModel)
         birthVC.coordinator = self
-        navigationController.setViewControllers([birthVC], animated: true)
+        self.navigationController.setViewControllers([birthVC], animated: true)
     }
     
     func showProfileSetting() {
         let profileVC = ProfileSettingViewController(loginViewModel: loginViewModel)
         profileVC.coordinator = self
-        navigationController.setViewControllers([profileVC], animated: true)
+        self.navigationController.setViewControllers([profileVC], animated: true)
     }
     
     func showHome() {
@@ -210,7 +210,7 @@ final class HomeCoordinator: Coordinator {
     func startHome() {
         let homeVC = HomeViewController(homeViewModel: homeViewModel)
         homeVC.coordinator = self
-        navigationController.setViewControllers([homeVC], animated: true)
+        self.navigationController.setViewControllers([homeVC], animated: true)
         _ = memberViewModel
     }
     
@@ -222,27 +222,27 @@ final class HomeCoordinator: Coordinator {
         guard let groupVM = groupViewModel else { return }
         let vc = GroupViewController(groupViewModel: groupVM)
         vc.coordinator = self
-        navigationController.setViewControllers([vc], animated: true)
+        self.navigationController.setViewControllers([vc], animated: true)
     }
     
     func startGroupHost() {
         guard let groupVM = groupViewModel else { return }
         let vc = GroupHostViewController(groupViewModel: groupVM)
         vc.coordinator = self
-        navigationController.pushViewController(vc, animated: true)
+        self.navigationController.pushViewController(vc, animated: true)
     }
     
     func startGroupEnter() {
         guard let groupVM = groupViewModel else { return }
         let vc = GroupEnterViewController(groupViewModel: groupVM)
         vc.coordinator = self
-        navigationController.pushViewController(vc, animated: true)
+        self.navigationController.pushViewController(vc, animated: true)
     }
     
     func startCamera() {
         let vc = CameraViewController()
         vc.coordinator = self
-        navigationController.pushViewController(vc, animated: true)
+        self.navigationController.pushViewController(vc, animated: true)
     }
     
     func startToUpload(image: UIImage, cameraType: CameraType) {
@@ -255,31 +255,31 @@ final class HomeCoordinator: Coordinator {
         let uploadVC = ImageUploadViewController(image: image,
                                                  homeViewModel: homeViewModel)
         uploadVC.coordinator = self
-        navigationController.pushViewController(uploadVC, animated: true)
+        self.navigationController.pushViewController(uploadVC, animated: true)
     }
     
     func backToHome() {
         // 쌓여있던 모든 화면 제거하고 루트인 homeVC로 이동
-        navigationController.popToRootViewController(animated: true)
+        self.navigationController.popToRootViewController(animated: true)
     }
     
     func startFeedDetail(post: Post) {
         let vc = FeedDetailViewController(homeViewModel: homeViewModel, post: post)
         vc.coordinator = self
-        navigationController.pushViewController(vc, animated: true)
+        self.navigationController.pushViewController(vc, animated: true)
     }
     
     func startMembers() {
         let vc = MemberViewController(memberviewModel: memberViewModel,
                                       homeViewModel: homeViewModel)
         vc.coordinator = self
-        navigationController.pushViewController(vc, animated: true)
+        self.navigationController.pushViewController(vc, animated: true)
     }
     
     func startComment(post: Post) {
         let vc = FeedCommentViewController(homeViewModel: homeViewModel, post: post)
         vc.modalPresentationStyle = .pageSheet
-        navigationController.present(vc, animated: true)
+        self.navigationController.present(vc, animated: true)
     }
     
     func startProfile() {
@@ -287,6 +287,12 @@ final class HomeCoordinator: Coordinator {
                                        homeViewModel: homeViewModel,
                                        loginViewModel: loginViewModel)
         vc.coordinator = self
-        navigationController.pushViewController(vc, animated: true)
+        self.navigationController.pushViewController(vc, animated: true)
+    }
+    
+    func startNicknameEdit() {
+        let vc = NicknameEditViewController(loginViewModel: loginViewModel)
+        vc.coordinator = self
+        self.navigationController.pushViewController(vc, animated: true)
     }
 }
