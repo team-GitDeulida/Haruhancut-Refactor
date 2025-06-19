@@ -23,6 +23,11 @@ protocol HomeViewModelType {
     func uploadPost(image: UIImage) -> Driver<Bool>
     func transform() -> HomeViewModel.Output
     func deletePost(_ post: Post)
+    
+    /// 댓글 관련
+    func addComment(post: Post, text: String) -> Driver<Bool>
+    func deleteComment(post: Post, commentId: String) -> Driver<Bool>
+    
 }
 
 final class HomeViewModel: HomeViewModelType {
@@ -248,6 +253,61 @@ final class HomeViewModel: HomeViewModelType {
     }
 }
 
+// MARK: - 댓글 관련
+extension HomeViewModel {
+    
+    // MARK: - 댓글 추가
+    
+    /// <#Description#>
+    /// - Parameters:
+    ///   - post: 댓글을 작성할 게시물
+    ///   - text: 댓글 텍스트
+    /// - Returns: 처리 성공 여부
+    func addComment(post: Post, text: String) -> Driver<Bool> {
+        // 유저 정보 없으면 리턴
+        guard let user = user.value else { return .just(false) }
+        guard let groupId = group.value?.groupId else { return .just(false) }
+        
+        let commentId = UUID().uuidString
+        let newComment = Comment(
+            commentId: commentId,
+            userId: user.uid,
+            nickname: user.nickname,
+            profileImageURL: user.profileImageURL,
+            text: text,
+            createdAt: Date()
+        )
+        
+        // 경로: groups/{groupId}/postsByDate/{날짜}/{postId}/comments/{commentId}
+        let dateKey = post.createdAt.toDateKey()
+        let path = "groups/\(groupId)/postsByDate/\(dateKey)/\(post.postId)/comments/\(commentId)"
+        let commentDTO = newComment.toDTO()
+        
+        return self.groupUsecase.addComment(path: path, value: commentDTO)
+            .asDriver(onErrorJustReturn: false)
+    }
+    
+    
+    /// 댓글 삭제
+    /// - Parameters:
+    ///   - post: 댓글이 포함된 게시물
+    ///   - commentId: 삭제할 댓글 Id
+    /// - Returns: 처리 성공 여부
+    func deleteComment(post: Post, commentId: String) -> Driver<Bool> {
+        guard let groupId = group.value?.groupId else { return .just(false) }
+        
+        // 게시글 작성된 날짜를 키로 변환 (예: "2025-05-20")
+        let dateKey = post.createdAt.toDateKey()
+        
+        // 삭제할 댓글의 경로 구성
+        let path = "groups/\(groupId)/postsByDate/\(dateKey)/\(post.postId)/comments/\(commentId)"
+        
+        return self.groupUsecase.deleteComment(path: path)
+            .asDriver(onErrorJustReturn: false)
+    }
+}
+
+
 extension HomeViewModel {
     struct Output {
         let todayPosts: Driver<[Post]>
@@ -276,7 +336,6 @@ extension HomeViewModel {
 }
 
 final class StubHomeViewModel: HomeViewModelType {
-    
     let user = BehaviorRelay<User?>(value: nil)
     let group = BehaviorRelay<HCGroup?>(value: nil)
     let posts = BehaviorRelay<[Post]>(value: [])
@@ -292,4 +351,11 @@ final class StubHomeViewModel: HomeViewModelType {
                      allPostsByDate: Driver.just([:]))
     }
     func deletePost(_ post: Post) {}
+    func addComment(post: Post, text: String) -> Driver<Bool> {
+        return .just(false)
+    }
+    
+    func deleteComment(post: Post, commentId: String) -> Driver<Bool> {
+        return .just(false)
+    }
 }

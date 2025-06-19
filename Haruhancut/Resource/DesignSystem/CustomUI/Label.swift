@@ -13,6 +13,7 @@ final class HCLabel: UILabel {
     enum LabelType {
         case main(text: String)              // 큰 제목
         case sub(text: String)               // 부제목
+        case commentTitle(text: String)      // 댓글 타이틀
         case commentAuther(text: String)     // 댓글 작성자
         case commentContent(text: String)    // 댓글 본문
         case custom(text: String, font: UIFont, color: UIColor)   // 커스텀 크기
@@ -40,7 +41,11 @@ final class HCLabel: UILabel {
             self.text = text
         case .sub(let text):
             textColor = .gray
-            font = UIFont.hcFont(.semiBold, size: 15.scaled)
+            font = UIFont.hcFont(.semiBold, size: 16.scaled)
+            self.text = text
+        case .commentTitle(let text):
+            textColor = .mainWhite
+            font = UIFont.hcFont(.bold, size: 16.scaled)
             self.text = text
         case .commentAuther(let text):
             textColor = .mainWhite
@@ -56,11 +61,11 @@ final class HCLabel: UILabel {
             self.text = text
         case .feedNickname(let text):
             textColor = .mainWhite
-            font = .hcFont(.extraBold, size: 14)
+            font = .hcFont(.extraBold, size: 14.scaled)
             self.text = text
         case .feedTime(let text):
             textColor = .Gray300
-            font = .hcFont(.extraBold, size: 14)
+            font = .hcFont(.extraBold, size: 14.scaled)
             self.text = text
         }
     }

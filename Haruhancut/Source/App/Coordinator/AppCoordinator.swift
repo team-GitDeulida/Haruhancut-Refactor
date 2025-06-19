@@ -272,4 +272,10 @@ final class HomeCoordinator: Coordinator {
         vc.coordinator = self
         navigationController.pushViewController(vc, animated: true)
     }
+    
+    func startComment(post: Post) {
+        let vc = FeedCommentViewController(homeViewModel: homeViewModel, post: post)
+        vc.modalPresentationStyle = .pageSheet
+        navigationController.present(vc, animated: true)
+    }
 }

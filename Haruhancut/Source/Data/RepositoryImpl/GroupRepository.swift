@@ -21,6 +21,9 @@ protocol GroupRepositoryProtocol {
     func deleteImage(path: String) -> Observable<Bool>
     func observeValueStream<T: Decodable>(path: String, type: T.Type) -> Observable<T>
     func deleteValue(path: String) -> Observable<Bool>
+    
+    func addComment(path: String, value: CommentDTO) -> Observable<Bool>
+    func deleteComment(path: String) -> Observable<Bool>
 }
 
 final class GroupRepository: GroupRepositoryProtocol {
@@ -67,6 +70,14 @@ final class GroupRepository: GroupRepositoryProtocol {
     }
     
     func deleteValue(path: String) -> Observable<Bool> {
+        return firebaseAuthManager.deleteValue(path: path)
+    }
+    
+    func addComment(path: String, value: CommentDTO) -> Observable<Bool> {
+        return firebaseAuthManager.addComment(path: path, value: value)
+    }
+    
+    func deleteComment(path: String) -> Observable<Bool> {
         return firebaseAuthManager.deleteValue(path: path)
     }
 }

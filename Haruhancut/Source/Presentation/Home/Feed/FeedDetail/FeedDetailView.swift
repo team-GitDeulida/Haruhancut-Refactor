@@ -8,7 +8,7 @@ import UIKit
 
 final class FeedDetailView: UIView {
     
-    let post: Post
+    var post: Post
     
     // MARK: - UI Component
     lazy var imageView: UIImageView = {

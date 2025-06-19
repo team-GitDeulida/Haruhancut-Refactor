@@ -18,6 +18,9 @@ protocol GroupUsecaseProtocol {
     func deleteImage(path: String) -> Observable<Bool>
     func observeValueStream<T: Decodable>(path: String, type: T.Type) -> Observable<T>
     func deleteValue(path: String) -> Observable<Bool>
+    
+    func addComment(path: String, value: CommentDTO) -> Observable<Bool>
+    func deleteComment(path: String) -> Observable<Bool>
 }
 
 final class GroupUsecase: GroupUsecaseProtocol {
@@ -63,6 +66,14 @@ final class GroupUsecase: GroupUsecaseProtocol {
     func deleteValue(path: String) -> Observable<Bool> {
         return repository.deleteValue(path: path)
     }
+    
+    func addComment(path: String, value: CommentDTO) -> Observable<Bool> {
+        return repository.addComment(path: path, value: value)
+    }
+    
+    func deleteComment(path: String) -> Observable<Bool> {
+        return repository.deleteComment(path: path)
+    }
 }
 
 final class StubGroupUsecase: GroupUsecaseProtocol {
@@ -106,6 +117,14 @@ final class StubGroupUsecase: GroupUsecaseProtocol {
     }
     
     func deleteValue(path: String) -> Observable<Bool> {
+        return .just(false)
+    }
+    
+    func addComment(path: String, value: CommentDTO) -> Observable<Bool> {
+        return .just(false)
+    }
+    
+    func deleteComment(path: String) -> Observable<Bool> {
         return .just(false)
     }
 }

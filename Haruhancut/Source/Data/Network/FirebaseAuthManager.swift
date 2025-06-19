@@ -44,6 +44,10 @@ protocol FirebaseAuthManagerProtocol {
     func joinGroup(inviteCode: String) -> Observable<Result<HCGroup, GroupError>>
     func updateGroup(path: String, post: PostDTO) -> Observable<Bool>
     
+    // 댓글관련
+    func addComment(path: String, value: CommentDTO) -> Observable<Bool>
+    func deleteComment(path: String) -> Observable<Bool>
+    
     // 스냅샷관련
     func observeValueStream<T: Decodable>(path: String, type: T.Type) -> Observable<T>
 }
@@ -489,6 +493,16 @@ extension FirebaseAuthManager {
     /// - Returns: 업데이트 결과
     func updateGroup(path: String, post: PostDTO) -> Observable<Bool> {
         return updateValue(path: path, value: post)
+    }
+}
+
+// MARK: - 댓글 관련
+extension FirebaseAuthManager {
+    func addComment(path: String, value: CommentDTO) -> Observable<Bool> {
+        return setValue(path: path, value: value)
+    }
+    func deleteComment(path: String) -> Observable<Bool> {
+        return deleteValue(path: path)
     }
 }
 
