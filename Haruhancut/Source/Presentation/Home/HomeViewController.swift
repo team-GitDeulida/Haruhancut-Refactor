@@ -84,11 +84,6 @@ final class HomeViewController: UIViewController {
         setupConstraints()
     }
 
-    // MARK: - Bindings
-    private func bindViewModel() {
-
-    }
-    
     // MARK: - UI
     private func setupNavi() {
         /// 네비게이션 버튼 색상
