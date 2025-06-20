@@ -16,7 +16,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "DFE35E772E05227D009246B6"
+               BlueprintIdentifier = "DFE35E972E0523AE009246B6"
                BuildableName = "WidgetExtensionExtension.appex"
                BlueprintName = "WidgetExtensionExtension"
                ReferencedContainer = "container:Haruhancut.xcodeproj">

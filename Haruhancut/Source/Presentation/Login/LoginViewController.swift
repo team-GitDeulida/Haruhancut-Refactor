@@ -31,12 +31,17 @@ final class LoginViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        customView.animationView.play()
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         self.bindViewModel()
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        checkTutorialStatus()
+        customView.animationView.play()
     }
 
     // MARK: - Bindings
@@ -62,6 +67,18 @@ final class LoginViewController: UIViewController {
                     }
                 }
             }.disposed(by: disposeBag)
+    }
+    
+    /// 온보딩 체크
+    private func checkTutorialStatus() {
+        let userDefaults = UserDefaults.standard
+        let hasCompletedTutorial = userDefaults.bool(forKey: "Tutorial")
+        
+        if !hasCompletedTutorial {
+            let onboardingVC = OnboardingViewController(transitionStyle: .scroll, navigationOrientation: .horizontal)
+            onboardingVC.modalPresentationStyle = .fullScreen
+            present(onboardingVC, animated: false)
+        }
     }
 }
 

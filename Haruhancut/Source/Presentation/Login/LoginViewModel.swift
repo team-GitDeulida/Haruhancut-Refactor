@@ -159,7 +159,8 @@ extension LoginViewModel {
                     self.user.accept(user)
                     UserDefaultsManager.shared.saveUser(user)
                     
-                    // TODO: - FCM 토큰 관련
+                    // MARK: - FCM 토큰 동기화
+                    self.syncFCMTokenWithServerIfNeeded(currentUser: user)
                 } else {
                     print("❌ 사용자 정보 없음 캐시 삭제 진행")
                     self.user.accept(nil)
@@ -399,6 +400,50 @@ extension LoginViewModel {
     }
 }
 
+// MARK: - FCM 토큰 갱신 함수
+extension LoginViewModel {
+    
+    private func updateUser(user: User) -> Observable<Result<Void, LoginError>> {
+        loginUseCase
+            .updateUser(user: user)
+            .map { [weak self] result -> Result<Void, LoginError> in
+                if case .success(let user) = result {
+                    self?.user.accept(user)
+                    UserDefaultsManager.shared.saveUser(user)
+                }
+                return result.mapToVoid()
+            }
+    }
+    
+    private func syncFCMTokenWithServerIfNeeded(currentUser: User) {
+        guard let localToken = UserDefaults.standard.string(forKey: "localFCMToken") else {
+            print("⚠️ 로컬에 저장된 토큰 없음")
+            return
+        }
+        
+        let serverToken = currentUser.fcmToken ?? ""
+        
+        if serverToken != localToken {
+            print("🔄 서버와 토큰 불일치: 서버=\(currentUser.fcmToken ?? "nil") / 로컬=\(localToken) → 업데이트 시도")
+            var updatedUser = currentUser
+            updatedUser.fcmToken = localToken
+            
+            updateUser(user: updatedUser)
+                .subscribe(onNext: { result in
+                    switch result {
+                    case .success:
+                        print("✅ 서버 토큰 동기화 완료")
+                    case .failure(let error):
+                        print("❌ 토큰 동기화 실패: \(error)")
+                    }
+                })
+                .disposed(by: disposeBag)
+        } else {
+            print("✅ 서버와 로컬 토큰 일치")
+        }
+    }
+}
+
 final class StubLoginViewModel: LoginViewModelType {
     
     var user = RxRelay.BehaviorRelay<User?>(value: User.empty(loginPlatform: .apple))
@@ -423,3 +468,4 @@ final class StubLoginViewModel: LoginViewModelType {
         return .init(isNicknameValid: .just(false), nicknameChangeResult: Driver.just(.success(())))
     }
 }
+
