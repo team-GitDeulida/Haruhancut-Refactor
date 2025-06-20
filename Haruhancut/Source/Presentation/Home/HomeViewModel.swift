@@ -7,6 +7,7 @@
 import UIKit
 import RxSwift
 import RxCocoa
+import WidgetKit
 
 enum CameraType {
     case camera
@@ -155,7 +156,37 @@ final class HomeViewModel: HomeViewModelType {
             self.posts.accept(allPosts)
             
             /// 4. 최신 포스트 체크후 위젯 컨테이너에 없으면 저장한다
-            // TODO: -
+            // MARK: - 위젯 로직: 최신 포스트 체크후 위젯 컨테이너에 없으면 저장
+            
+            // 위젯에 저장되지 않은 오늘 포스트 이미지 자동 저장
+            if let todayPost = allPosts.last(where: { $0.isToday }) {
+                let dateKey = todayPost.createdAt.toDateKey()
+
+                // 1. 해당 이미지가 위젯 컨테이너에 저장되어 있는지 확인
+                if let containerURL = FileManager.default
+                    .containerURL(forSecurityApplicationGroupIdentifier: PhotoWidgetManager.shared.appGroupID)?
+                    .appendingPathComponent("Photos", isDirectory: true)
+                    .appendingPathComponent(dateKey, isDirectory: true) {
+
+                    let existingFiles = (try? FileManager.default.contentsOfDirectory(at: containerURL, includingPropertiesForKeys: nil)) ?? []
+                    let alreadySaved = existingFiles.contains { $0.lastPathComponent.contains(todayPost.postId) }
+
+                    // 2. 저장되어 있지 않다면 서버에서 이미지 다운로드 후 저장
+                    if !alreadySaved, let imageURL = URL(string: todayPost.imageURL) {
+                        URLSession.shared.dataTask(with: imageURL) { data, _, error in
+                            if let data = data, let image = UIImage(data: data) {
+                                PhotoWidgetManager.shared.saveTodayImage(image, identifier: todayPost.postId)
+
+                                // 저장 후 위젯 리로드
+                                WidgetCenter.shared.reloadTimelines(ofKind: "PhotoWidget")
+                            } else {
+                                print("❌ 이미지 다운로드 실패 또는 변환 실패: \(error?.localizedDescription ?? "Unknown error")")
+                            }
+                        }.resume()
+                    }
+                }
+            }
+            
         })
         
     }
@@ -241,7 +272,13 @@ final class HomeViewModel: HomeViewModelType {
                 return self.groupUsecase.updateGroup(path: dbPath, post: post.toDTO())
 //                    .do { success in
 //                        if success {
-//                            // TODO: -
+//                            // MARK: - 위젯 로직: 업로드 성공시 사진 저장
+//                            
+//                            // 1) 파이어베이스 저장 성공시 컨테이너에 오늘 사진 저장
+//                            PhotoWidgetManager.shared.saveTodayImage(image, identifier: postId)
+//                            
+//                            // 2) 저장 직후 위젯 타임라인 강제 갱신
+//                            WidgetCenter.shared.reloadTimelines(ofKind: "PhotoWidget")
 //                        }
 //                    }
             }
@@ -266,9 +303,16 @@ final class HomeViewModel: HomeViewModelType {
                 
             }
             .bind(onNext: { success in
-                
                 print("✅ 삭제 완료: \(success)")
-                /// 추후 위젯 관련 기능 추가 예정
+                
+                // MARK: - 위젯 로직: 삭제 성공시 사진 삭제
+                PhotoWidgetManager.shared.deleteImage(
+                   dateKey: dateKey,
+                   identifier: post.postId
+                )
+                
+                // 2) 삭제 직후 위젯 타임라인 강제 갱신
+                WidgetCenter.shared.reloadTimelines(ofKind: "PhotoWidget")
             })
             .disposed(by: disposeBag)
             
