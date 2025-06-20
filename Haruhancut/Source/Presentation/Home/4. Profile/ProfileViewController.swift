@@ -38,7 +38,24 @@ final class ProfileViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupNavigation()
         bindViewModel()
+    }
+    
+    // MARK: - setupNavigation
+    private func setupNavigation()
+    {
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(
+            image: UIImage(systemName: "gearshape.fill"),
+            style: .plain,
+            target: self,
+            action: #selector(navigateToSetting)
+        )
+        
+        /// 자식 화면에서 뒤로가기
+        let backItem = UIBarButtonItem()
+        backItem.title = "프로필"
+        navigationItem.backBarButtonItem = backItem
     }
 
     // MARK: - Bindings
@@ -126,6 +143,10 @@ final class ProfileViewController: UIViewController {
                 self.customView.nicknameLabel.text = nickname
             })
             .disposed(by: disposeBag)
+    }
+    
+    @objc func navigateToSetting() {
+        coordinator?.startSetting()
     }
 }
 

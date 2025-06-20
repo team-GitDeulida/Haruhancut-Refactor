@@ -26,7 +26,6 @@ final class ProfileView: UIView {
         let button = UIButton()
         button.setImage(UIImage(systemName: "pencil"), for: .normal)
         button.tintColor = .mainWhite
-        /// button.addTarget(self, action: #selector(navigateToNicknameSetting), for: .touchUpInside)
         return button
     }()
     

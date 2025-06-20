@@ -87,7 +87,7 @@ final class MemberViewController: UIViewController {
     // MARK: - 초대 함수
     private func shareInvitation(inviteCode: String) {
         // 1) 초대 메시지
-        let inviteURL = "https://www.notion.so/210db9e736cf80d4b3a8c7e077e6325f?source=copy_link"
+        let inviteURL = Constants.Notion.notionURL
         let message = """
 우리 가족 그룹에 초대할게요!
 초대코드: \(inviteCode)

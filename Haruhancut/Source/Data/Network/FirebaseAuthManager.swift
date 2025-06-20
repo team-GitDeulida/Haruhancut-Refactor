@@ -56,7 +56,7 @@ final class FirebaseAuthManager: FirebaseAuthManagerProtocol {
     static let shared = FirebaseAuthManager()
     private init() {}
     private var databaseRef: DatabaseReference {
-        Database.database(url: "https://haruhancut-kor-default-rtdb.firebaseio.com").reference()
+        Database.database(url: Constants.Firebase.realtimeURL).reference()
     }
 }
 

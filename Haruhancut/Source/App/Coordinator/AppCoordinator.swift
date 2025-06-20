@@ -295,4 +295,31 @@ final class HomeCoordinator: Coordinator {
         vc.coordinator = self
         self.navigationController.pushViewController(vc, animated: true)
     }
+    
+    func startSetting() {
+        let vc = SettingViewController(
+            settingViewModel: SettingViewModel(user: homeViewModel.user.value!,
+                                               loginUseCase: DIContainer.shared.resolve(LoginUsecase.self)),
+            homeViewModel: homeViewModel)
+        vc.coordinator = self
+        self.navigationController.pushViewController(vc, animated: true)
+    }
+    
+    func startLogin() {
+        finishFlow() // 현재 흐름 종료(자신을 부모에서 제거
+        if let appCoordinator = parentCoordinator as? AppCoordinator {
+            
+            UIView.transition(with: navigationController.view,
+                              duration: 0.4,
+                              options: .transitionFlipFromLeft,
+                              animations: {
+                // ✅ AppCoordinator가 로그인 코디네이터 시작
+                appCoordinator.startLoginFlowCoordinator()
+            })
+        }
+    }
+    
+    func finishFlow() {
+        parentCoordinator?.childDidFinish(self)
+    }
 }
