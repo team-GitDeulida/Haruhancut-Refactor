@@ -387,7 +387,10 @@ extension LoginViewModel {
         return Observable.create { observer in
             Messaging.messaging().token { token, error in
                 if let error = error {
-                    observer.onError(error)
+                    print("⚠️ FCM 토큰 발급 실패: \(error.localizedDescription)")
+                    print("⚠️ FCM 토큰을 받을 수 없는 기기라서 넘아갑니다.")
+                    observer.onNext("noFCM")
+                    observer.onCompleted()
                 } else if let token = token {
                     observer.onNext(token)
                     observer.onCompleted()
