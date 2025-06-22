@@ -11,4 +11,4 @@
 |                         로그인 화면                          |                           홈 화면                            |                         포스팅 화면                          |                          댓글 화면                           |                         캘린더 화면                          |                         프로필 화면                          |
 
 
-https://github.com/user-attachments/assets/55cffead-89ec-4126-9e74-c6af316c31e5
+<!-- https://github.com/user-attachments/assets/55cffead-89ec-4126-9e74-c6af316c31e5 -->
