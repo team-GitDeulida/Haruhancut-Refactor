@@ -9,19 +9,3 @@
 |                         로그인 화면                          |                           홈 화면                            |                         포스팅 화면                          |                          댓글 화면                           |                         캘린더 화면                          |                         프로필 화면                          |
 
 
-
-
-
-
-
-
-
-sads
-
-
-
-
-https://github.com/user-attachments/assets/af5cff0c-a5ef-4e09-b863-2a2925dd1711
-
-
-
