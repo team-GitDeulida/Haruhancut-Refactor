@@ -1,12 +1,5 @@
 ## Haruhancut
 
-<video autoplay loop muted playsinline width="600">
-  <source src="https://github.com/user-attachments/assets/55cffead-89ec-4126-9e74-c6af316c31e5" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
-
-
-
 
 
 ![1](https://github.com/user-attachments/assets/096330e8-4836-41d3-9eac-97b1c70e15ea)
@@ -18,3 +11,4 @@
 |                         로그인 화면                          |                           홈 화면                            |                         포스팅 화면                          |                          댓글 화면                           |                         캘린더 화면                          |                         프로필 화면                          |
 
 
+https://github.com/user-attachments/assets/55cffead-89ec-4126-9e74-c6af316c31e5
