@@ -103,7 +103,7 @@ final class AppCoordinator: Coordinator {
     
     /// 버전 확인
     private func checkAppVersionIfNeeded() {
-        VersionManager.shared.checkForAppUpdates(bundleId: Bundle.main.bundleIdentifier ?? "") { [weak self] needsUpdate, latestVersion in
+        VersionManager.shared.checkForAppUpdates(bundleId: Constants.Appstore.appId) {  [weak self] needsUpdate, currentVersion, latestVersion in
             guard needsUpdate, let latest = latestVersion else { return }
             DispatchQueue.main.async {
                 guard let self = self else { return }
@@ -124,11 +124,6 @@ final class AppCoordinator: Coordinator {
                 }
             }
         }
-    }
-    
-    // TODO: -
-    private func checkAppVersion() {
-        
     }
 }
 

@@ -15,18 +15,20 @@ final class VersionManager {
     /// - Parameters:
     ///   - bundleId: 앱의 번들 ID
     ///   - completion: 업데이트 필요 여부와 최신 버전 전달
-    func checkForAppUpdates(bundleId: String, completion: @escaping (Bool, String?) -> Void) {
+    func checkForAppUpdates(bundleId: String, completion: @escaping (_ needsUpdate: Bool, _ currentVersion: String, _ latestVersion: String?) -> Void) {
         let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.0.0"
-        print("현재 버전: \(currentVersion)")
+        print("📱 현재 버전: \(currentVersion)")
         
         fetchLatestVersionFromAppStore(bundleId: bundleId) { latest in
+            print("🛍️ 앱스토어 최신 버전: \(latest ?? "없음")")
             if let latest = latest, self.isUpdateRequired(currentVersion: currentVersion, latestVersion: latest) {
-                completion(true, latest)
+                completion(true, currentVersion, latest)
             } else {
-                completion(false, nil)
+                completion(false, currentVersion, latest)
             }
         }
     }
+
     
     /// 앱스토어에서 최신 버전 정보를 가져옴
     private func fetchLatestVersionFromAppStore(bundleId: String, completion: @escaping (String?) -> Void) {
@@ -36,7 +38,7 @@ final class VersionManager {
         completion(fakeLatestVersion)
          */
         
-        guard let url = URL(string: "https://itunes.apple.com/lookup?bundleId=\(bundleId)") else {
+        guard let url = URL(string: "https://itunes.apple.com/lookup?id=\(bundleId)&country=KR") else {
             completion(nil)
             return
         }

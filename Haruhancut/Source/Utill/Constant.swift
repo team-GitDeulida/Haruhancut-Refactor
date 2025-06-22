@@ -13,6 +13,7 @@ enum Constants {
     enum Appstore {
         // 앱스토어 등록 URL
         static let appstoreURL = "https://apps.apple.com/kr/app/id6743386583"
+        static let appId = "6743386583"
     }
     
     enum Firebase {
