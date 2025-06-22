@@ -15,11 +15,11 @@ final class VersionManager {
     /// - Parameters:
     ///   - bundleId: 앱의 번들 ID
     ///   - completion: 업데이트 필요 여부와 최신 버전 전달
-    func checkForAppUpdates(bundleId: String, completion: @escaping (_ needsUpdate: Bool, _ currentVersion: String, _ latestVersion: String?) -> Void) {
+    func checkForAppUpdates(appId: String, completion: @escaping (_ needsUpdate: Bool, _ currentVersion: String, _ latestVersion: String?) -> Void) {
         let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.0.0"
         print("📱 현재 버전: \(currentVersion)")
         
-        fetchLatestVersionFromAppStore(bundleId: bundleId) { latest in
+        fetchLatestVersionFromAppStore(appId: appId) { latest in
             print("🛍️ 앱스토어 최신 버전: \(latest ?? "없음")")
             if let latest = latest, self.isUpdateRequired(currentVersion: currentVersion, latestVersion: latest) {
                 completion(true, currentVersion, latest)
@@ -29,16 +29,49 @@ final class VersionManager {
         }
     }
 
-    
-    /// 앱스토어에서 최신 버전 정보를 가져옴
-    private func fetchLatestVersionFromAppStore(bundleId: String, completion: @escaping (String?) -> Void) {
+    private func fetchLatestVersionFromAppStore(appId: String, completion: @escaping (String?) -> Void) {
         
         /*
         let fakeLatestVersion = "9.9.9"
         completion(fakeLatestVersion)
          */
         
-        guard let url = URL(string: "https://itunes.apple.com/lookup?id=\(bundleId)&country=KR") else {
+        let timestamp = Int(Date().timeIntervalSince1970)
+        let urlString = "https://itunes.apple.com/lookup?id=\(appId)&country=KR&timestamp=\(timestamp)" // 캐시 우회용 파라미터
+        
+        guard let url = URL(string: urlString) else {
+            completion(nil)
+            return
+        }
+
+        URLSession.shared.dataTask(with: url) { data, _, _ in
+            guard let data = data else {
+                completion(nil)
+                return
+            }
+
+            do {
+                if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                   let results = json["results"] as? [[String: Any]],
+                   let latestVersion = results.first?["version"] as? String {
+                    completion(latestVersion)
+                } else {
+                    completion(nil)
+                }
+            } catch {
+                completion(nil)
+            }
+        }.resume()
+    }
+
+    
+    /// 앱스토어에서 최신 버전 정보를 가져옴
+    private func fetchLatestVersionFromAppStore_Save(appId: String, completion: @escaping (String?) -> Void) {
+        
+ 
+        
+        print("https://itunes.apple.com/lookup?id=\(appId)&country=KR")
+        guard let url = URL(string: "https://itunes.apple.com/lookup?id=\(appId)&country=KR") else {
             completion(nil)
             return
         }
@@ -55,6 +88,7 @@ final class VersionManager {
                 if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
                    let results = json["results"] as? [[String: Any]],
                    let latestVersion = results.first?["version"] as? String {
+                    print("[이거이거]: \(latestVersion)")
                     completion(latestVersion)
                 } else {
                     completion(nil)

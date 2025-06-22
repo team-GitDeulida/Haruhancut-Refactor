@@ -74,9 +74,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // This may occur due to temporary interruptions (ex. an incoming phone call).
     }
 
+    /// 앱이 포그라운드로 진입 (처음 실행도 포함)
     func sceneWillEnterForeground(_ scene: UIScene) {
-        // Called as the scene transitions from the background to the foreground.
-        // Use this method to undo the changes made on entering the background.
+        checkAppVersionIfNeeded()
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {
@@ -84,7 +84,33 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Use this method to save data, release shared resources, and store enough scene-specific state information
         // to restore the scene back to its current state.
     }
+}
 
+// MARK: - 버전 업데이트 확인
+extension SceneDelegate {
+    private func checkAppVersionIfNeeded() {
+        VersionManager.shared.checkForAppUpdates(appId: Constants.Appstore.appId) { [weak self] needsUpdate, currentVersion, latestVersion in
+            guard needsUpdate, let latest = latestVersion else { return }
 
+            DispatchQueue.main.async {
+                guard let self = self,
+                          let topVC = self.appCoordinator?.navigationController.topViewController else { return }
+
+                let alert = UIAlertController(
+                    title: "업데이트 알림",
+                    message: "최신 버전(\(latest))이 출시되었습니다. 앱스토어에서 업데이트 해주세요.",
+                    preferredStyle: .alert
+                )
+
+                alert.addAction(UIAlertAction(title: "업데이트", style: .default, handler: { _ in
+                    if let url = URL(string: Constants.Appstore.appstoreURL) {
+                        UIApplication.shared.open(url)
+                    }
+                }))
+
+                topVC.present(alert, animated: true)
+            }
+        }
+    }
 }
 

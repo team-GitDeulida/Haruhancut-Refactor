@@ -50,7 +50,7 @@ final class AppCoordinator: Coordinator {
     /// 로그인플로우 or 홈 플로우
     func start() {
         print("AppCoordinator - start()")
-        checkAppVersionIfNeeded()
+        /// checkAppVersionIfNeeded()
         if isLoggedIn {
             startHomeCoordinator()
         } else {
@@ -102,8 +102,9 @@ final class AppCoordinator: Coordinator {
     }
     
     /// 버전 확인
+    /*
     private func checkAppVersionIfNeeded() {
-        VersionManager.shared.checkForAppUpdates(bundleId: Constants.Appstore.appId) {  [weak self] needsUpdate, currentVersion, latestVersion in
+        VersionManager.shared.checkForAppUpdates(appId: Constants.Appstore.appId) {  [weak self] needsUpdate, currentVersion, latestVersion in
             guard needsUpdate, let latest = latestVersion else { return }
             DispatchQueue.main.async {
                 guard let self = self else { return }
@@ -125,6 +126,7 @@ final class AppCoordinator: Coordinator {
             }
         }
     }
+     */
 }
 
 final class LoginFlowCoordinator: Coordinator {
