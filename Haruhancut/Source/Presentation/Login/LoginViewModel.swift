@@ -419,6 +419,52 @@ extension LoginViewModel {
     }
     
     private func syncFCMTokenWithServerIfNeeded(currentUser: User) {
+        
+        let localToken = UserDefaults.standard.string(forKey: "localFCMToken")
+        let serverToken = currentUser.fcmToken ?? ""
+        
+        // 1) 로컬에 토큰이 전혀 없거나, noFCM 상태라면 무조건 새로 발급 시도(에러시 그대로 noFCM)
+        if localToken == nil || localToken == "noFCM" {
+            print("🔄 로컬 토큰이 없거나 noFCM: 새로 FCM 토큰 받아와서 동기화")
+            generateFCMToken()
+                .flatMapLatest { [weak self] newToken -> Observable<Result<Void, LoginError>> in
+                    guard let self = self else { return .empty() }
+                    var updated = currentUser
+                    updated.fcmToken = newToken
+                    self.user.accept(updated)
+                    return self.updateUser(user: updated)
+                }
+                .subscribe(onNext: { result in
+                    switch result {
+                    case .success:
+                        print("✅ 서버 토큰 동기화 완료")
+                    case .failure(let error):
+                        print("❌ 토큰 동기화 실패: \(error)")
+                    }
+                })
+                .disposed(by: disposeBag)
+            return
+        }
+            
+        // 2) 로컬에 토큰이 있고, 서버와 다르다면 업데이트
+        if localToken != serverToken {
+            print("🔄 서버와 토큰 불일치: 서버=\(serverToken) / 로컬=\(localToken!) → 업데이트")
+            var updated = currentUser
+            updated.fcmToken = localToken!
+            updateUser(user: updated)
+              .subscribe(onNext: { result in
+                  switch result {
+                  case .success: print("✅ 서버 토큰 동기화 완료")
+                  case .failure(let error): print("❌ 토큰 동기화 실패:", error)
+                  }
+              })
+              .disposed(by: disposeBag)
+        } else {
+            print("✅ 서버와 로컬 토큰 일치—동기화 불필요")
+        }
+    }
+    
+    private func syncFCMTokenWithServerIfNeeded_save(currentUser: User) {
         guard let localToken = UserDefaults.standard.string(forKey: "localFCMToken") else {
             print("⚠️ 로컬에 저장된 토큰 없음")
             return
