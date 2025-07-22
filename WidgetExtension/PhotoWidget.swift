@@ -156,7 +156,7 @@ struct PhotoWidgets: Widget {
                 .accessoryInline
            ]) // systemMedium, systemLarge
             .configurationDisplayName("하루한컷")
-            .description("앱 공유 컨테이너에 저장된 오늘의 사진을 하루 한 장씩 보여줍니다.")
+            .description("가족이 올린 오늘의 사진을 앱을 열지 않고도 확인할 수 있습니다.")
             .contentMarginsDisabled()
     }
 }
