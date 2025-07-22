@@ -150,10 +150,11 @@ struct PhotoWidgets: Widget {
             }
             .supportedFamilies([
                 .systemSmall,
-                .systemMedium,
-                .accessoryCircular,
-                .accessoryRectangular,
-                .accessoryInline
+                .systemLarge
+                // .systemMedium,
+                // .accessoryCircular,
+                // .accessoryRectangular,
+                // .accessoryInline
            ]) // systemMedium, systemLarge
             .configurationDisplayName("하루한컷")
             .description("가족이 올린 오늘의 사진을 앱을 열지 않고도 확인할 수 있습니다.")
