@@ -126,8 +126,17 @@ struct PhotoWIdgetView: View {
                 .widgetURL(URL(string: "myapp://photo/\(entry.date.timeIntervalSince1970)"))
                 .widgetBackground(.clear)
         } else {
-            Color.black
+            
+            Image("widgetPreview")
+                .resizable()
+                .scaledToFill()
+                .widgetURL(URL(string: "myapp://photo/empty"))
                 .widgetBackground(.clear)
+            
+//            Color.black
+//                .widgetBackground(.clear)
+            
+            
             // 사진이 없으면 플레이스홀더
 //            Image(systemName: "progress.indicator")
 //                .resizable()
