@@ -7,6 +7,3 @@
 
 import RxSwift
 
-//public protocol GroupRepositoryProtocol {
-//
-//}
