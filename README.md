@@ -88,8 +88,6 @@ func fetchComments(groupId: String, postId: String) -> Observable<[CommentDTO]> 
 >
 > **해결**  
 > App Group 공유 컨테이너를 활용하여 앱 -> 위젯으로 사진을 전달하는 파일 기반 데이터 구조 설계
->
-> **구현 방식**  
 > 1. 앱을 켜면 오늘 날짜 기준 가장 최신 1장을 추출
 > 2. 해당 이미지를 App Group내부 Photos/<yyyy-MM-dd>/<timestamp>-<postId>.jpg 형태로 저장
 > 3, 게시글 삭제 시 동일 postId를 포함한 파일 자동 삭제
