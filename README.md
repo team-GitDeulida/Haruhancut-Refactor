@@ -60,10 +60,11 @@
 > `Encodable / Decodable` 기반의 공통 제네릭 CRUD 메서드 구현
 >
 > **성과**  
-> 🔸 **모든 엔티티 CRUD를 하나의 인터페이스로 통일**
-> 🔸 신규 엔티티 추가 시 모델만 만들면 즉시 CRUD 재사용 가능
-> 🔸 유지보수성 대폭 향상 (중복 코드 제거)
+> 🔸 **모든 엔티티 CRUD를 하나의 인터페이스로 통일**  
+> 🔸 신규 엔티티 추가 시 모델만 만들면 즉시 CRUD 재사용 가능    
+> 🔸 유지보수성 대폭 향상 (중복 코드 제거)       
 ```swift
+// 제네릭 CRUD
 func setValue<T: Encodable>(path: String, value: T) -> Observable<Bool>
 func readValue<T: Decodable>(path: String, type: T.Type) -> Observable<T>
 func updateValue<T: Encodable>(path: String, value: T) -> Observable<Bool>
@@ -75,3 +76,12 @@ func fetchComments(groupId: String, postId: String) -> Observable<[CommentDTO]> 
     return firebase.readValue(path: path, type: [CommentDTO].self)
 }
 ```
+
+---
+
+<!--### **2. WidgetKit + App Group 기반 '오늘 최신 사진 1장을' 위젯에 노출**-->
+<!--> **문제**-->
+<!--> 가족이 올린 "오늘 사진"을 앱 외부 위젯에서 보여주려면 -->
+<!--> **앱이 가진 피드 데이터를 위젯 프로세스로 안전하게 넘기는 중간 계층**이 필요했음-->
+<!-->-->
+
