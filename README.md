@@ -25,11 +25,16 @@
 
 <!-- https://github.com/user-attachments/assets/55cffead-89ec-4126-9e74-c6af316c31e5 -->
 
+<!--1. 하루에 한 장 사진 업로드-->
+<!--2. 캘린더 기반 사진 아카이브-->
+<!--3. 사진에 댓글로 하루의 이야기 공유-->
+<!--4. 우리 가족만의 프라이빗 공간-->
+
 # 1. 기능 소개
-1. 하루에 한 장 사진 업로드
-2. 캘린더 기반 사진 아카이브
-3. 사진에 댓글로 하루의 이야기 공유
-4. 우리 가족만의 프라이빗 공간
+1. 하루에 단 한 장 사진 업로드 📸
+2. 캘린더로 날짜별 사진 아카이브 확인 🗓️
+3. 사진에 댓글을 남겨 하루의 이야기 공유 💬
+4. 가족·연인·지인과만 소통하는 프라이빗 그룹 👨‍👩‍👧‍👦
 
 </br><br/>
 
@@ -42,3 +47,31 @@
 |**KakaoSDK**|카카오 소셜 로그인 구현을 위함|
 |**GoogleSDK**|구글 소셜 로그인 구현을 위함|
 |**Kingfisher**|이미지 캐싱 처리 및 UI 성능 개선을 위함|
+
+</br><br/>
+
+# 3. 핵심 성과
+
+### **1. 제네릭 기반 Firebase CRUD 메서드 구현**
+> **문제**  
+> 엔티티마다 CRUD 함수가 요구되어 JSON 직렬화/역직렬화 로직이 엔티티마다 반복됨.
+>
+> **해결**  
+> `Encodable / Decodable` 기반의 공통 제네릭 CRUD 메서드 구현
+>
+> **성과**  
+> 🔸 **모든 엔티티 CRUD를 하나의 인터페이스로 통일**
+> 🔸 신규 엔티티 추가 시 모델만 만들면 즉시 CRUD 재사용 가능
+> 🔸 유지보수성 대폭 향상 (중복 코드 제거)
+```swift
+func setValue<T: Encodable>(path: String, value: T) -> Observable<Bool>
+func readValue<T: Decodable>(path: String, type: T.Type) -> Observable<T>
+func updateValue<T: Encodable>(path: String, value: T) -> Observable<Bool>
+func deleteValue(path: String) -> Observable<Bool>
+
+// Repository 예시 — 중복 없는 Firebase 호출
+func fetchComments(groupId: String, postId: String) -> Observable<[CommentDTO]> {
+    let path = "groups/\(groupId)/posts/\(postId)/comments"
+    return firebase.readValue(path: path, type: [CommentDTO].self)
+}
+```
