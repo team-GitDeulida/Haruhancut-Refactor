@@ -16,11 +16,27 @@
 <br/>
 <br/>
 
-
-
 | ![0](https://github.com/user-attachments/assets/38e83972-f0e2-4b44-94c8-fdc3075fa7b9) | ![1](https://github.com/user-attachments/assets/6eb4b901-fe7e-4575-a8bc-563b5fa21979) | ![2](https://github.com/user-attachments/assets/2cf2e03b-3843-45e3-bac3-05f31d95d5b3) | ![3](https://github.com/user-attachments/assets/2fd851ff-9099-4f52-a4ea-17cf58d6eeff) | ![4](https://github.com/user-attachments/assets/280285e1-f14a-4112-85d2-7dceb162e349) | ![5](https://github.com/user-attachments/assets/2cb6dc19-f8b2-4523-9fbc-9f3efb74246e) |
 | :----------------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
 |                         로그인 화면                          |                           홈 화면                            |                         포스팅 화면                          |                          댓글 화면                           |                         캘린더 화면                          |                         프로필 화면                          |
 
 
 <!-- https://github.com/user-attachments/assets/55cffead-89ec-4126-9e74-c6af316c31e5 -->
+
+# 1. 기능 소개
+1. 하루에 한 장 사진 업로드
+2. 캘린더 기반 사진 아카이브
+3. 사진에 댓글로 하루의 이야기 공유
+4. 우리 가족만의 프라이빗 공간
+
+</br><br/>
+
+# 2. 기술 스택
+|library|description|
+|:---:|:---:|
+|**FirebaseSDK**|FCM을 이용한 푸쉬 알림 및 사용자 인증/데이터 관리를 위함|
+|**RxSwift**|비동기 흐름을 선언적으로 관리하고 이벤트 기반 로직 처리를 위함|
+|**WidgetKit**|앱을 열지 안아도 위젯으로 업로드한 사진을 확인할 수 있도록 구현|
+|**KakaoSDK**|카카오 소셜 로그인 구현을 위함|
+|**GoogleSDK**|구글 소셜 로그인 구현을 위함|
+|**Kingfisher**|이미지 캐싱 처리 및 UI 성능 개선을 위함|
