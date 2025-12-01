@@ -95,8 +95,8 @@ func fetchComments(groupId: String, postId: String) -> Observable<[CommentDTO]> 
 > 5. 이전 날짜 폴더는 자정에 자동 삭제되어 용량 안정성 확보
 >
 > **성과**    
-> 🔸 앱을 열지 않아도 홈 화면에서 오늘 최신 사진 1장을 확인 가능
-> 🔸 App Group 기반 파일 공유 구조로 앱·위젯 프로세스 분리 문제를 시스템 레벨에서 해결
+> 🔸 앱을 열지 않아도 홈 화면에서 오늘 최신 사진 1장을 확인 가능  
+> 🔸 App Group 기반 파일 공유 구조로 앱·위젯 프로세스 분리 문제를 시스템 레벨에서 해결  
 ```swift
 struct PhotoProvider: TimelineProvider {
     let appGroupID = "group.com.indextrown.Haruhancut.WidgetExtension"
