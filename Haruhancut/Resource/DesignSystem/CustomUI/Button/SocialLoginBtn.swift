@@ -60,3 +60,7 @@ final class SocialLoginButton: UIButton {
         }
     }
 }
+
+#Preview {
+    SocialLoginButton(type: .kakao, title: "카카오로 계속하기")
+}

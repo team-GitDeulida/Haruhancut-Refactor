@@ -75,7 +75,7 @@ extension LoginViewModel {
                 }
             }
             // 3. 기존유저: 정보가져오기. 신규유저: 회원가입
-            .flatMapLatest { [weak self] result -> Observable<Result<Void, LoginError>> in
+            .flatMapLatest {     [weak self] result -> Observable<Result<Void, LoginError>> in
                 guard let self = self else { return .empty() }
                 switch result {
                 case .success:
@@ -113,6 +113,7 @@ extension LoginViewModel {
                 guard let self = self else { return .empty() }
                 switch result {
                 case .success(let (token, rawNonce)):
+                    print("디버깅: idToken: \(token), rawNonce:\(rawNonce)")
                     self.token = token
                     return self.loginUseCase.authenticateUser(prividerID: "apple", idToken: token, rawNonce: rawNonce)
                 case .failure(let error):
